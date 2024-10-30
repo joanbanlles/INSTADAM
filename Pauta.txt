@@ -1,0 +1,34 @@
+-Pantalla de Log-in
+Logo de l'aplicació
+Eslògan
+Camps de text per a nom d'usuari i contrasenya
+Botons per accedir a l'aplicació i per registrar-se
+
+-Pantalla de Sign-in
+Camps de text per a nom, cognom, nom d'usuari, contrasenya i repetir contrasenya
+Botó per comprovar les dades i verificar si l'usuari ja existeix
+Botó per tornar a la pantalla de log-in
+
+-Pantalla Home
+Mostrar publicacions fetes per l'usuari
+BottomNavigationBar amb 4 ítems: casa, perfil, configuració i publicació
+Funcionalitat d'scroll si les publicacions superen la mida de la pantalla
+Adaptació de la pantalla per a ús en tablets amb grid_view i/o list_view
+
+-Pantalla Settings
+Checklist amb opció de guardar dades d'inici de sessió
+Persistència de dades amb shared_preferences
+Botó per sortir de la sessió i tornar a la pantalla de log-in
+
+-Pantalla Profile
+Mostrar la foto de perfil
+Mostrar informació principal i descripció de l'usuari
+Mostrar almenys un post de l'usuari
+Preparar el disseny per mostrar posts futurs
+
+-Pantalla Newpost
+Funcionalitat per pujar una foto a través del paquet image_picker
+
+-Disseny
+Disseny atractiu i intuïtiu
+Aplicació fluida i fàcil d'utilitzar
