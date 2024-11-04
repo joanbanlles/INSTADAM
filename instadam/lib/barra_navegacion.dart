@@ -13,8 +13,8 @@ class _BarraNavegacionState extends State<BarraNavegacion> {
   static const List<Widget> _widgetOptions = <Widget>[
     Text('Pantalla de Menú'),
     Text('Pantalla de M\'agrades'),
-    Text('Pantalla de Perfil'),
     Text('Pantalla de Nova Publicació'),
+    Text('Pantalla de Perfil'),
   ];
 
   void _onItemTapped(int index) {
@@ -43,16 +43,16 @@ class _BarraNavegacionState extends State<BarraNavegacion> {
             label: 'M\'agrades',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.add_a_photo),
             label: 'Nova Publicació',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Perfil',
+          ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: const Color.fromARGB(255, 0, 0, 0),
         onTap: _onItemTapped,
       ),
     );

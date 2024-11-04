@@ -17,11 +17,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginScreen(), // Cambia la pantalla inicial a LoginScreen
+      home: const HomeScreen(), // Cambia la pantalla inicial a LoginScreen
       routes: {
         '/home': (context) => const HomeScreen(),
         '/profile': (context) => const ProfileScreen(),
-        '/settings': (context) => const SettingsScreen(),
+        '/settings': (context) => const Settings(),
         '/barranavegacio': (context) => const BarraNavegacion(),
       },
     );
