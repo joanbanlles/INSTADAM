@@ -10,10 +10,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Pantalla de Menú'),
-    Text('Pantalla de M\'agrades'),
-    Text('Pantalla de Perfil'),
+  static List<Widget> _widgetOptions = <Widget>[
+    const Text('Pantalla de Casa'),
+    const Text('Pantalla de Perfil'),
+    const Text('Pantalla de Configuració'),
+    UserPostsScreen(), // Pantalla de Publicacions
   ];
 
   void _onItemTapped(int index) {
@@ -34,22 +35,62 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Menú',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'M\'agrades',
+            icon: Icon(Icons.home),
+            label: 'Casa',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Perfil',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Configuració',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.post_add),
+            label: 'Publicació',
+          ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.blue,
         onTap: _onItemTapped,
       ),
+    );
+  }
+}
+
+class UserPostsScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth > 600) {
+          // Pantalla de tablet
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 4.0,
+              mainAxisSpacing: 4.0,
+            ),
+            itemCount: 20, // Número de publicaciones
+            itemBuilder: (context, index) {
+              return Card(
+                child: Center(child: Text('Publicació $index')),
+              );
+            },
+          );
+        } else {
+          // Pantalla de móvil
+          return ListView.builder(
+            itemCount: 20, // Número de publicaciones
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text('Publicació $index'),
+              );
+            },
+          );
+        }
+      },
     );
   }
 }
