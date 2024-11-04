@@ -14,7 +14,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Text('Pantalla de Menú'),
     Text('Pantalla de M\'agrades'),
     Text('Pantalla de Perfil'),
-    Text('Pantalla de Nova Publicació'),
   ];
 
   void _onItemTapped(int index) {
@@ -45,10 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Perfil',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_a_photo),
-            label: 'Nova Publicació',
           ),
         ],
         currentIndex: _selectedIndex,

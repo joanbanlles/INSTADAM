@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:instadam/home.dart';
-import 'package:instadam/profile.dart'; // Importa SettingsScreen
+import 'package:instadam/profile.dart';
 import 'package:instadam/login.dart';
-import 'package:instadam/setting'; // Importa LoginScreen
+import 'package:instadam/settings.dart';
 import 'barra_navegacion.dart';
 
 void main() {
