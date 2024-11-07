@@ -42,7 +42,6 @@ class StoriesSection extends StatelessWidget {
     'gerard_farre',
     'alejandro_drope',
     'carlitos_123',
-
   ];
 
   @override
@@ -59,7 +58,8 @@ class StoriesSection extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 35,
-                  backgroundImage: AssetImage('assets/story_image_$index.jpg'), // Asegúrate de que las imágenes existan
+                  backgroundImage: AssetImage(
+                      'assets/story_image_$index.jpg'), // Asegúrate de que las imágenes existan
                 ),
                 SizedBox(height: 5),
                 Text(userNames[index]),
@@ -81,13 +81,12 @@ class PostSection extends StatelessWidget {
       children: [
         // Publicación 1
         PostItem(
-            username: 'gerard_farre',
-            location: 'casa elodia',
-            userImage: 'assets/images.png',
-            postImage: 'assets/descarga.jpg',
-            comments: ['¡Qué bonito!', '¡Me encanta!'],
-            postHeight: 400, // Adjust the height as needed
-          
+          username: 'gerard_farre',
+          location: 'casa elodia',
+          userImage: 'assets/images.png',
+          postImage: 'assets/descarga.jpg',
+          comments: ['¡Qué bonito!', '¡Me encanta!'],
+          postHeight: 400, // Adjust the height as needed
         ),
         // Publicación 2
         PostItem(
@@ -132,7 +131,7 @@ class PostItem extends StatelessWidget {
     required this.location,
     required this.userImage,
     required this.postImage,
-    required this.comments, 
+    required this.comments,
     required int postHeight,
   });
 

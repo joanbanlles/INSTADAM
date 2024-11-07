@@ -31,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
-        title: Text(
+        title: const Text(
           'Configuración',
           style: TextStyle(color: Colors.black),
         ),
