@@ -64,6 +64,10 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.settings),
             label: 'Settings',
           ),
+            BottomNavigationBarItem(
+            icon: Icon(Icons.add_box),
+            label: 'New Post',
+            ),
         ],
       ),
     );
