@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(NewPostApp());
+  runApp(Newpost());
 }
 
-class NewPostApp extends StatelessWidget {
+class Newpost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,7 +45,7 @@ class NewPostScreen extends StatelessWidget {
             'assets/descarga.jpg', // Ruta de tu imagen
             height: 250,
            // Altura ajustada para la imagen
-            width: 300,
+            width: 250,
             fit: BoxFit.cover,
           ),
           
@@ -64,7 +64,8 @@ class NewPostScreen extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 20), // Espacio entre imagen destacada y cuadrícula
+          // Reduce the space between the images
+          SizedBox(height: 8),
 
           // Cuadrícula de imágenes
           Expanded(
@@ -74,7 +75,7 @@ class NewPostScreen extends StatelessWidget {
                 crossAxisSpacing: 4.0,
                 mainAxisSpacing: 4.0,
               ),
-              itemCount: 10, // Número de elementos en la cuadrícula
+              itemCount: 9, // Número de elementos en la cuadrícula
               itemBuilder: (context, index) {
                 return Container(
                   color: Color.fromARGB(255, 122, 122, 122), // Color de fondo de los elementos de la cuadrícula

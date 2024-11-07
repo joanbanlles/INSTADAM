@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:instadam/home.dart';
 import 'package:instadam/profile.dart';
 import 'package:instadam/settings.dart';
+import 'package:instadam/newpost.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => Home(),
         '/profile': (context) => ProfileScreen(),
         '/settings': (context) => Settings(),
+        '/newpost': (context) => Newpost(),
       },
     );
   }
@@ -35,6 +37,7 @@ class _MainScreenState extends State<MainScreen> {
     Home(),
     ProfileScreen(),
     Settings(),
+    Newpost(),
   ];
 
   @override
@@ -42,7 +45,10 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
         selectedIconTheme: IconThemeData(color: Colors.black),
+        unselectedIconTheme: IconThemeData(color: Colors.black),
         showSelectedLabels: false,
         showUnselectedLabels: false,
         currentIndex: _currentIndex,
@@ -63,13 +69,16 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',
+          
           ),
-            BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.add_box),
-            label: 'New Post',
-            ),
+            label: 'NewPost',
+          
+          ),
         ],
       ),
+
     );
   }
 }

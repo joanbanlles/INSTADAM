@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatelessWidget {
   @override
@@ -18,7 +19,28 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _saveLoginData = false;
+  String _accountName = '';
+  @override
+  void initState() {
+    super.initState();
+    _loadAccountData();
+  }
 
+  // Cargar datos de la cuenta desde SharedPreferences
+  void _loadAccountData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _saveLoginData = prefs.getBool('saveLoginData') ?? false;
+      _accountName = prefs.getString('accountName') ?? '';
+    });
+  }
+
+  // Guardar datos de la cuenta en SharedPreferences
+  void _saveAccountData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('saveLoginData', _saveLoginData);
+    prefs.setString('accountName', _accountName);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
