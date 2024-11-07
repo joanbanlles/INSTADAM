@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:instadam/settings.dart';
-
-void main() {
-  runApp(Home());
-}
 
 class Home extends StatelessWidget {
   @override
@@ -50,7 +45,7 @@ class StoriesSection extends StatelessWidget {
       height: 100,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: userNames.length, // Número de historias
+        itemCount: userNames.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -58,8 +53,7 @@ class StoriesSection extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 35,
-                  backgroundImage: AssetImage(
-                      'assets/story_image_$index.jpg'), // Asegúrate de que las imágenes existan
+                  backgroundImage: AssetImage('assets/image$index.png'),
                 ),
                 SizedBox(height: 5),
                 Text(userNames[index]),
