@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
 
+  // Base de datos de usuarios como lista estática
+  static List<Map<String, String>> users = [];
+
   @override
   _SignUpState createState() => _SignUpState();
 }
@@ -13,38 +16,47 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Simulación de base de datos de usuarios
-  final List<Map<String, String>> users = [];
-
   void _register() {
     final name = _nameController.text;
     final email = _emailController.text;
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    // Verificación de campos vacíos
     if (name.isEmpty || email.isEmpty || username.isEmpty || password.isEmpty) {
       _showErrorDialog('Por favor, completa todos los campos.');
       return;
     }
 
-    // Verificación de duplicación de email o nombre de usuario
-    final userExists = users.any((user) => user['email'] == email || user['username'] == username);
+    final userExists = SignUp.users.any((user) => user['email'] == email || user['username'] == username);
     if (userExists) {
       _showErrorDialog('El correo electrónico o el nombre de usuario ya están en uso.');
       return;
     }
 
-    // Registro exitoso, se añade el usuario a la "base de datos"
-    users.add({
+    // Agregar usuario a la lista estática
+    SignUp.users.add({
       'name': name,
       'email': email,
       'username': username,
       'password': password,
     });
 
-    // Navegar a la pantalla de Home
-    Navigator.pushReplacementNamed(context, '/home');
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Registro Exitoso'),
+        content: Text('¡Tu cuenta ha sido creada exitosamente!'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showErrorDialog(String message) {
