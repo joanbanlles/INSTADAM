@@ -1,26 +1,96 @@
-import 'package:flutter/material.dart';
-import 'package:instadam/home.dart';
-import 'package:instadam/profile.dart'; // Importa SettingsScreen
-// Importa LoginScreen
-import 'barra_navegacion.dart';
 
-void main() {
-  runApp(MyApp());
-}
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+
+
+
+void main() => runApp(MyApp());
+
+
 
 class MyApp extends StatelessWidget {
+
   @override
+
   Widget build(BuildContext context) {
+
     return MaterialApp(
-      title: 'Instadam',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+
+      home: Scaffold(
+
+        appBar: AppBar(
+
+          title: Text('Counter App'),
+
+        ),
+
+        body: CounterWidget(),
+
       ),
-      // Cambia la pantalla inicial a LoginScreen
-      routes: {
-        '/profile': (context) => const ProfileScreen(),
-        '/barranavegacio': (context) => const BarraNavegacion(),
-      },
+
     );
+
   }
+
+}
+
+
+
+class CounterWidget extends StatefulWidget {
+
+  @override
+
+  _CounterWidgetState createState() => _CounterWidgetState();
+
+}
+
+
+
+class _CounterWidgetState extends State<CounterWidget> {
+
+  int _counter = 0;
+
+
+
+  void _incrementCounter() {
+
+    setState(() {
+
+      _counter++;
+
+    });
+
+  }
+
+
+
+  @override
+
+  Widget build(BuildContext context) {
+
+    return Column(
+
+      mainAxisAlignment: MainAxisAlignment.center,
+
+      children: <Widget>[
+
+        Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
+
+        FloatingActionButton(
+
+          onPressed: _incrementCounter,
+
+          tooltip: 'Increment',
+
+          child: Icon(Icons.add),
+
+        ),
+
+      ],
+
+    );
+
+  }
+
 }
