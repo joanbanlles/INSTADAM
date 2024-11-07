@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="true" type="FlutterBazelRunConfigurationType" factoryName="Flutter (Bazel)">
+    <option name="enableReleaseMode" value="false" />
+    <method v="2" />
+  </configuration>
+</component>

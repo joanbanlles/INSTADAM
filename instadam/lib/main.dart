@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:instadam/home.dart';
 import 'package:instadam/profile.dart';
-import 'package:instadam/login.dart';
+import 'package:instadam/login.dart'; // Verifica que login.dart contiene LoginScreen
 import 'package:instadam/settings.dart';
-import 'barra_navegacion.dart';
+import 'package:instadam/barra_navegacion.dart';
+import 'package:instadam/signup.dart'; // Importa la pantalla de registro
 
 void main() {
   runApp(MyApp());
@@ -17,12 +18,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(), // Cambia la pantalla inicial a LoginScreen
+      // Cambiamos la pantalla de inicio a SignUp
+      initialRoute: '/signup',
       routes: {
-        '/home': (context) => const HomeScreen(),
-        '/profile': (context) => const ProfileScreen(),
-        '/settings': (context) => const Settings(),
-        '/barranavegacio': (context) => const BarraNavegacion(),
+        '/signup': (context) => const SignUp(),            // Ruta para registro
+        '/login': (context) => const LoginScreen(),        // Ruta para LoginScreen, no login
+        '/home': (context) => const HomeScreen(),          // Ruta para Home
+        '/profile': (context) => const ProfileScreen(),    // Ruta para Perfil
+        '/settings': (context) => const Settings(),        // Ruta para Ajustes
+        '/barranavegacion': (context) => const BarraNavegacion(), // Barra de Navegación
       },
     );
   }
