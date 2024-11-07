@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:instadam/settings.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(Home());
 }
 
-class MyApp extends StatelessWidget {
+class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,7 +14,6 @@ class MyApp extends StatelessWidget {
           title: Text('Instadam'),
         ),
         body: InstadamBody(),
-        bottomNavigationBar: InstagramBottomNavBar(),
       ),
     );
   }
@@ -199,40 +199,6 @@ class PostItem extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class InstagramBottomNavBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: '',
-        ),
-      ],
-      currentIndex: 0, // Índice del elemento seleccionado
-      selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.black,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      onTap: (index) {
-        // Manejar la navegación aquí
-      },
     );
   }
 }

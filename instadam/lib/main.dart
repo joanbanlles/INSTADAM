@@ -1,96 +1,71 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:instadam/home.dart';
+import 'package:instadam/profile.dart';
+import 'package:instadam/settings.dart';
 
-
-
-
-void main() => runApp(MyApp());
-
-
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
-
   @override
-
   Widget build(BuildContext context) {
-
     return MaterialApp(
-
-      home: Scaffold(
-
-        appBar: AppBar(
-
-          title: Text('Counter App'),
-
-        ),
-
-        body: CounterWidget(),
-
-      ),
-
+      title: 'Flutter Navigation',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => MainScreen(),
+        '/home': (context) => Home(),
+        '/profile': (context) => ProfileScreen(),
+        '/settings': (context) => Settings(),
+      },
     );
-
   }
-
 }
 
-
-
-class CounterWidget extends StatefulWidget {
-
+class MainScreen extends StatefulWidget {
   @override
-
-  _CounterWidgetState createState() => _CounterWidgetState();
-
+  _MainScreenState createState() => _MainScreenState();
 }
 
+class _MainScreenState extends State<MainScreen> {
+  int _currentIndex = 0;
 
-
-class _CounterWidgetState extends State<CounterWidget> {
-
-  int _counter = 0;
-
-
-
-  void _incrementCounter() {
-
-    setState(() {
-
-      _counter++;
-
-    });
-
-  }
-
-
+  final List<Widget> _screens = [
+    Home(),
+    ProfileScreen(),
+    Settings(),
+  ];
 
   @override
-
   Widget build(BuildContext context) {
-
-    return Column(
-
-      mainAxisAlignment: MainAxisAlignment.center,
-
-      children: <Widget>[
-
-        Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
-
-        FloatingActionButton(
-
-          onPressed: _incrementCounter,
-
-          tooltip: 'Increment',
-
-          child: Icon(Icons.add),
-
-        ),
-
-      ],
-
+    return Scaffold(
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        selectedIconTheme: IconThemeData(color: Colors.black),
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
     );
-
   }
-
 }
