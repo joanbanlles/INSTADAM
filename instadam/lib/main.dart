@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instadam/home.dart';
-import 'package:instadam/profile.dart';
+import 'package:instadam/Profile.dart';
 import 'package:instadam/settings.dart';
 import 'package:instadam/newpost.dart';
 
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => MainScreen(),
         '/home': (context) => Home(),
-        '/profile': (context) => ProfileScreen(),
+        '/profile': (context) => Profile(),
         '/settings': (context) => Settings(),
         '/newpost': (context) => Newpost(),
       },
