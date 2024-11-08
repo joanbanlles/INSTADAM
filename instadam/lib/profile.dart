@@ -27,7 +27,7 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Gerard Farré',
+          'gfarree',
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
@@ -81,8 +81,8 @@ class ProfileScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'Your bio goes here...\nwww.example.com',
-                              textAlign: TextAlign.center,
+                              'Lleida | Ilerna',
+                              textAlign: TextAlign.justify,
                               style: TextStyle(color: Colors.grey),
                             ),
                           ],
