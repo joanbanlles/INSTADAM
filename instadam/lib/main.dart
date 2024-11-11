@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'App de Ejemplo',
       initialRoute: '/signup',  // Cambia a la pantalla de registro por defecto

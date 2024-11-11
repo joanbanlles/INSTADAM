@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
 
-  // Base de datos de usuarios como lista estática
   static List<Map<String, String>> users = [];
 
   @override
@@ -33,7 +32,6 @@ class _SignUpState extends State<SignUp> {
       return;
     }
 
-    // Agregar usuario a la lista estática
     SignUp.users.add({
       'name': name,
       'email': email,
@@ -78,38 +76,56 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registro'),
-      ),
-      body: Padding(
+      backgroundColor: Colors.white,  // Fondo blanco para toda la pantalla
+      body: Container(
+        color: Colors.white, // Fondo blanco para el contenido
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Nombre Completo'),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/logo.png', height: 100), // Añade el logo aquí
+                SizedBox(height: 20),
+                _buildRoundedTextField(_nameController, 'Nombre Completo'),
+                SizedBox(height: 10),
+                _buildRoundedTextField(_emailController, 'Correo Electrónico'),
+                SizedBox(height: 10),
+                _buildRoundedTextField(_usernameController, 'Nombre de Usuario'),
+                SizedBox(height: 10),
+                _buildRoundedTextField(_passwordController, 'Contraseña', obscureText: true),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _register,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    minimumSize: Size(double.infinity, 50),
+                  ),
+                  child: Text('Registrarse'),
+                ),
+              ],
             ),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Correo Electrónico'),
-            ),
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Nombre de Usuario'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Contraseña'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _register,
-              child: Text('Registrarse'),
-            ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRoundedTextField(TextEditingController controller, String labelText, {bool obscureText = false}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        filled: true,
+        fillColor: Colors.grey[200], // Fondo gris claro para los campos de texto
+      ),
+      obscureText: obscureText,
     );
   }
 }

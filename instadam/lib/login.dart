@@ -13,7 +13,7 @@ class LoginScreen extends StatelessWidget {
 
     final user = SignUp.users.firstWhere(
           (user) => user['username'] == username && user['password'] == password,
-      orElse: () => <String, String>{}, // Devuelve un mapa vacío en lugar de null
+      orElse: () => <String, String>{},
     );
 
     if (user.isNotEmpty) {
@@ -38,30 +38,51 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Iniciar Sesión'),
-      ),
+      backgroundColor: Colors.white, // Establece el fondo en blanco
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Nombre de usuario'),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/images/logo.png', height: 100), // Añade el logo aquí
+                SizedBox(height: 20),
+                _buildRoundedTextField(_usernameController, 'Nombre de usuario'),
+                SizedBox(height: 10),
+                _buildRoundedTextField(_passwordController, 'Contraseña', obscureText: true),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => _login(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    minimumSize: Size(double.infinity, 50),
+                  ),
+                  child: Text('Iniciar Sesión'),
+                ),
+              ],
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Contraseña'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _login(context),
-              child: Text('Iniciar Sesión'),
-            ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRoundedTextField(TextEditingController controller, String labelText, {bool obscureText = false}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        filled: true,
+        fillColor: Colors.white, // Fondo blanco para los campos de texto
+      ),
+      obscureText: obscureText,
     );
   }
 }
