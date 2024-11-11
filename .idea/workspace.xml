@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4676a99f-bd0c-42e0-9ca2-02fa52331554" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instadam/lib/home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/instadam/lib/home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instadam/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/instadam/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instadam/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/instadam/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instadam/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/instadam/test/widget_test.dart" afterDir="false" />
-    </list>
+
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,9 +17,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
-  <component name="ProjectId" id="2oUDzkAZ5UkNI5rFZfsrKoL8RmX" />
+
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -40,18 +32,14 @@
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "Juanillo",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/joanb/Documents/GitHub/INSTADAM/instadam",
+
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="4676a99f-bd0c-42e0-9ca2-02fa52331554" name="Changes" comment="" />
-      <created>1730915525901</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1730915525901</updated>
+
     </task>
     <servers />
   </component>
