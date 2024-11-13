@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +17,12 @@ class _HomeScreenState extends State<HomeScreen> {
     Text('Pantalla de Perfil'),
   ];
 
+  // Función para cerrar sesión sin eliminar las credenciales guardadas
+  void _logout(BuildContext context) {
+    // Navega de vuelta a la pantalla de inicio de sesión
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -27,6 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        actions: [
+          // Botón de salir
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () => _logout(context),
+            tooltip: 'Salir',
+          ),
+        ],
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),

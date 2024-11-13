@@ -76,9 +76,8 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,  // Fondo blanco para toda la pantalla
+      backgroundColor: Colors.white,
       body: Container(
-        color: Colors.white, // Fondo blanco para el contenido
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: SingleChildScrollView(
@@ -98,13 +97,37 @@ class _SignUpState extends State<SignUp> {
                 ElevatedButton(
                   onPressed: _register,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.blueAccent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     minimumSize: Size(double.infinity, 50),
                   ),
-                  child: Text('Registrarse'),
+                  child: Text(
+                    'Registrarse',
+                    style: TextStyle(color: Colors.white), // Cambié el texto a blanco
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'OR',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  style: TextButton.styleFrom(
+                    minimumSize: Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Iniciar Sesión',
+                    style: TextStyle(color: Colors.black), // Texto en negro
+                  ),
                 ),
               ],
             ),
