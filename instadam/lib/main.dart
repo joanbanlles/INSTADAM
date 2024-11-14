@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowMaterialGrid: false,
       title: 'Flutter Navigation',
       initialRoute: '/',
       routes: {
@@ -69,16 +70,13 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',
-          
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box),
             label: 'NewPost',
-          
           ),
         ],
       ),
-
     );
   }
 }

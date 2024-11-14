@@ -1,32 +1,22 @@
+// Importa los paquetes necesarios
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SettingsScreen(),
-    );
-  }
+  _SettingsState createState() => _SettingsState();
 }
 
-class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
-
-  @override
-  _SettingsScreenState createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsState extends State<Settings> {
   bool _saveLoginData = false;
   String _accountName = '';
+
   @override
   void initState() {
     super.initState();
     _loadAccountData();
   }
 
-  // Cargar datos de la cuenta desde SharedPreferences
   void _loadAccountData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -35,12 +25,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  // Guardar datos de la cuenta en SharedPreferences
   void _saveAccountData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('saveLoginData', _saveLoginData);
     prefs.setString('accountName', _accountName);
   }
+
+  // Implementación de la función _logout
+  void _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Limpiar todos los datos de SharedPreferences
+
+    // Navegar a la pantalla de inicio o de inicio de sesión
+    Navigator.of(context).pushReplacementNamed('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,37 +56,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: <Widget>[
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.person_add_alt, color: Colors.black),
-            title: const Text('Seguir e invitar a amigos'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.access_time, color: Colors.black),
-            title: const Text('Tu actividad'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading:
-                const Icon(Icons.notifications_outlined, color: Colors.black),
-            title: const Text('Notificaciones'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.lock_outline, color: Colors.black),
-            title: const Text('Privacidad'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.security, color: Colors.black),
-            title: const Text('Seguridad'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.campaign_outlined, color: Colors.black),
-            title: const Text('Anuncios'),
-            onTap: () {},
-          ),
-          ListTile(
             leading: const Icon(Icons.person_outline, color: Colors.black),
             title: const Text('Cuenta'),
             onTap: () {},
@@ -99,8 +67,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() {
                 _saveLoginData = value;
               });
+              _saveAccountData();
             },
             secondary: const Icon(Icons.save, color: Colors.black),
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.black),
+            title: const Text('Cerrar sesión'),
+            onTap: () {
+              _logout();
+            },
           ),
         ],
       ),
