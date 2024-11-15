@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart'; // Import del paquete image_picker
+import 'dart:io'; // Import necesario para trabajar con archivos (File)
 
 void main() {
   runApp(Newpost());
@@ -19,7 +21,12 @@ class Newpost extends StatelessWidget {
   }
 }
 
-class NewPostScreen extends StatelessWidget {
+class NewPostScreen extends StatefulWidget {
+  @override
+  _NewPostScreenState createState() => _NewPostScreenState();
+}
+
+class _NewPostScreenState extends State<NewPostScreen> {
   final List<String> imagePaths = [
     'assets/images11.jpg',
     'assets/images12.jpg',
@@ -31,6 +38,22 @@ class NewPostScreen extends StatelessWidget {
     'assets/images18.jpg',
     'assets/images19.jpg',
   ];
+
+  final List<File> capturedImages = []; // Lista para almacenar imágenes capturadas
+  final ImagePicker _picker = ImagePicker(); // Instancia del selector de imágenes
+
+  Future<void> _takePhoto() async {
+    try {
+      final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+      if (photo != null) {
+        setState(() {
+          capturedImages.add(File(photo.path));
+        });
+      }
+    } catch (e) {
+      print("Error al tomar la foto: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,41 +126,59 @@ class NewPostScreen extends StatelessWidget {
                   crossAxisSpacing: 6.0,
                   mainAxisSpacing: 6.0,
                 ),
-                itemCount: imagePaths.length,
+                itemCount: imagePaths.length + capturedImages.length,
                 itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ImageDetailScreen(
-                            imagePath: imagePaths[index],
+                  if (index < imagePaths.length) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ImageDetailScreen(
+                              imagePath: imagePaths[index],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.4),
+                              blurRadius: 3,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                          image: DecorationImage(
+                            image: AssetImage(imagePaths[index]),
+                            fit: BoxFit.cover,
                           ),
                         ),
-                      );
-                    },
-                    child: Container(
+                      ),
+                    );
+                  } else {
+                    final capturedIndex = index - imagePaths.length;
+                    return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.4),
-                            blurRadius: 3,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
                         image: DecorationImage(
-                          image: AssetImage(imagePaths[index]),
+                          image: FileImage(capturedImages[capturedIndex]),
                           fit: BoxFit.cover,
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
               ),
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _takePhoto,
+        child: Icon(Icons.camera_alt),
+        backgroundColor: Colors.blueGrey,
       ),
     );
   }
