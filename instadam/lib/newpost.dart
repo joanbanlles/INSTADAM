@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Import del paquete image_picker
-import 'dart:io'; // Import necesario para trabajar con archivos (File)
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(Newpost());
@@ -39,8 +40,32 @@ class _NewPostScreenState extends State<NewPostScreen> {
     'assets/images19.jpg',
   ];
 
-  final List<File> capturedImages = []; // Lista para almacenar imágenes capturadas
-  final ImagePicker _picker = ImagePicker(); // Instancia del selector de imágenes
+  List<File> capturedImages = [];
+  final ImagePicker _picker = ImagePicker();
+  String? selectedImage; // Almacena la imagen seleccionada para mostrarla arriba
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCapturedImages();
+    selectedImage = 'assets/descarga.jpg'; // Imagen por defecto en la parte superior
+  }
+
+  Future<void> _saveCapturedImages() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> paths = capturedImages.map((file) => file.path).toList();
+    await prefs.setStringList('capturedImages', paths);
+  }
+
+  Future<void> _loadCapturedImages() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String>? paths = prefs.getStringList('capturedImages');
+    if (paths != null) {
+      setState(() {
+        capturedImages = paths.map((path) => File(path)).toList();
+      });
+    }
+  }
 
   Future<void> _takePhoto() async {
     try {
@@ -48,11 +73,38 @@ class _NewPostScreenState extends State<NewPostScreen> {
       if (photo != null) {
         setState(() {
           capturedImages.add(File(photo.path));
+          selectedImage = photo.path; // Establecer como imagen seleccionada
         });
+        await _saveCapturedImages();
       }
     } catch (e) {
       print("Error al tomar la foto: $e");
     }
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    try {
+      final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
+      if (photo != null) {
+        setState(() {
+          capturedImages.add(File(photo.path));
+          selectedImage = photo.path; // Establecer como imagen seleccionada
+        });
+        await _saveCapturedImages();
+      }
+    } catch (e) {
+      print("Error al seleccionar la foto: $e");
+    }
+  }
+
+  void _deleteSelectedImage() {
+    if (selectedImage == null) return;
+    setState(() {
+      // Eliminar la imagen seleccionada de la lista si es una foto capturada
+      capturedImages.removeWhere((file) => file.path == selectedImage);
+      selectedImage = null; // Restablecer imagen seleccionada
+    });
+    _saveCapturedImages();
   }
 
   @override
@@ -85,6 +137,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Parte superior: Mostrar la imagen seleccionada
             Container(
               height: 200,
               decoration: BoxDecoration(
@@ -97,10 +150,14 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     offset: Offset(0, 3),
                   ),
                 ],
-                image: DecorationImage(
-                  image: AssetImage('assets/descarga.jpg'),
+                image: selectedImage != null
+                    ? DecorationImage(
+                  image: selectedImage!.startsWith('assets/')
+                      ? AssetImage(selectedImage!) as ImageProvider
+                      : FileImage(File(selectedImage!)),
                   fit: BoxFit.cover,
-                ),
+                )
+                    : null,
               ),
             ),
             SizedBox(height: 20),
@@ -131,14 +188,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   if (index < imagePaths.length) {
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ImageDetailScreen(
-                              imagePath: imagePaths[index],
-                            ),
-                          ),
-                        );
+                        setState(() {
+                          selectedImage = imagePaths[index]; // Cambiar la imagen seleccionada
+                        });
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -159,12 +211,19 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     );
                   } else {
                     final capturedIndex = index - imagePaths.length;
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        image: DecorationImage(
-                          image: FileImage(capturedImages[capturedIndex]),
-                          fit: BoxFit.cover,
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedImage = capturedImages[capturedIndex].path; // Cambiar la imagen seleccionada
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          image: DecorationImage(
+                            image: FileImage(capturedImages[capturedIndex]),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     );
@@ -175,35 +234,27 @@ class _NewPostScreenState extends State<NewPostScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _takePhoto,
-        child: Icon(Icons.camera_alt),
-        backgroundColor: Colors.blueGrey,
-      ),
-    );
-  }
-}
-
-// Pantalla de detalle de imagen en pantalla completa
-class ImageDetailScreen extends StatelessWidget {
-  final String imagePath;
-
-  ImageDetailScreen({required this.imagePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Colors.blueGrey[800]),
-      ),
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Image.asset(
-          imagePath,
-          fit: BoxFit.contain,
-        ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: _pickImageFromGallery,
+            child: Icon(Icons.image),
+            backgroundColor: Colors.blueGrey,
+          ),
+          SizedBox(width: 10),
+          FloatingActionButton(
+            onPressed: _takePhoto,
+            child: Icon(Icons.camera_alt),
+            backgroundColor: Colors.blueGrey,
+          ),
+          SizedBox(width: 10),
+          FloatingActionButton(
+            onPressed: _deleteSelectedImage,
+            child: Icon(Icons.delete),
+            backgroundColor: Colors.redAccent,
+          ),
+        ],
       ),
     );
   }
