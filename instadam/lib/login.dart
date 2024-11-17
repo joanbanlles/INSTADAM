@@ -148,7 +148,43 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
+<<<<<<< Updated upstream
           ),
+=======
+            const SizedBox(height: 20),
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(
+                labelText: 'Nom d\'usuari',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Contrasenya',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _login,
+              child: const Text('Accedir'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Navegar a la pantalla de Sign-in
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignIn()),
+                );
+              },
+              child: const Text('Registrar-se'),
+            ),
+          ],
+>>>>>>> Stashed changes
         ),
       ),
     );
