@@ -13,25 +13,18 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.0.15
+  image_picker: ^1.1.2  # Dependencia agregada para manejar la cámara
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
 
-  shared_preferences: ^2.0.6
-  image_picker: ^1.1.2  # Dependencia agregada para manejar la cámara
-
-  flutter_lints: ^2.0.0
-
-
 flutter:
   uses-material-design: true
 
   assets:
-
     - assets/images/logo.png
-
     - assets/descarga.jpg
     - assets/images.png
     - assets/image0.png
@@ -48,13 +41,3 @@ flutter:
     - assets/images8.jpg
     - assets/images9.jpg
     - assets/image10.png
-    - assets/images11.jpg
-    - assets/images12.jpg
-    - assets/images13.jpg
-    - assets/images14.jpg
-    - assets/foto15.webp
-    - assets/images16.webp
-    - assets/images17.jpg
-    - assets/images18.jpg
-    - assets/images19.jpg
-

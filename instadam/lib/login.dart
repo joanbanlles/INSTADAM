@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'sign_up.dart';
+import 'signup.dart';
 
 
-class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+
 
 void main() {
   runApp(const MaterialApp(
@@ -33,7 +32,7 @@ class _LoginScreenState extends State<Login> {
     _loadSavedCredentials();
   }
 
-  // Carga las credenciales guardadas usando SharedPreferences
+  
   Future<void> _loadSavedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('savedUsername');
@@ -49,7 +48,7 @@ class _LoginScreenState extends State<Login> {
     }
   }
 
-  // Guarda las credenciales usando SharedPreferences
+ 
   Future<void> _saveCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     if (_rememberMe) {
@@ -73,7 +72,7 @@ class _LoginScreenState extends State<Login> {
     );
 
     if (user.isNotEmpty) {
-      await _saveCredentials(); // Guarda las credenciales si está marcado "Recordar"
+      await _saveCredentials(); 
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       showDialog(
@@ -163,41 +162,6 @@ class _LoginScreenState extends State<Login> {
             ),
 
           ),
-
-            const SizedBox(height: 20),
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Nom d\'usuari',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Contrasenya',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _login,
-              child: const Text('Accedir'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Navegar a la pantalla de Sign-in
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignIn()),
-                );
-              },
-              child: const Text('Registrar-se'),
-            ),
-          ],
-
         ),
       ),
     );

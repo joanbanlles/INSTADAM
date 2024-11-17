@@ -31,12 +31,12 @@ class _SettingsState extends State<Settings> {
     prefs.setString('accountName', _accountName);
   }
 
-  // Implementación de la función _logout
+
   void _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // Limpiar todos los datos de SharedPreferences
+    await prefs.clear(); 
 
-    // Navegar a la pantalla de inicio o de inicio de sesión
+
     Navigator.of(context).pushReplacementNamed('/login');
   }
 

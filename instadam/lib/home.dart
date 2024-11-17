@@ -1,33 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Instadam'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () => _logout(context),
+            tooltip: 'Salir',
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StoriesSection(),
+            Divider(),
+            PostSection(),
+          ],
         ),
-        body: InstadamBody(),
       ),
     );
   }
-}
 
-class InstadamBody extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          StoriesSection(),
-          Divider(),
-          PostSection(),
-        ],
-      ),
-    );
+ 
+  void _logout(BuildContext context) {
+    Navigator.pushReplacementNamed(context, '/login');
   }
 }
 
@@ -39,18 +41,6 @@ class StoriesSection extends StatelessWidget {
     'alejandro_drope',
     'carlitos_123',
   ];
-
-
-  // Función para cerrar sesión sin eliminar las credenciales guardadas
-  void _logout(BuildContext context) {
-    // Navega de vuelta a la pantalla de inicio de sesión
-    Navigator.pushReplacementNamed(context, '/login');
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
 
   @override
   Widget build(BuildContext context) {
@@ -86,23 +76,19 @@ class PostSection extends StatelessWidget {
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       children: [
-        // Publicación 1
         PostItem(
           username: 'gerard_farre',
           location: 'casa elodia',
           userImage: 'assets/images.png',
           postImage: 'assets/descarga.jpg',
           comments: ['¡Qué bonito!', '¡Me encanta!'],
-          postHeight: 400, // Adjust the height as needed
         ),
-        // Publicación 2
         PostItem(
           username: 'Orlando_212',
           location: 'CKNO',
           userImage: 'assets/images.png',
           postImage: 'assets/descarga.jpg',
           comments: ['Aspolandole'],
-          postHeight: 400,
         ),
         PostItem(
           username: 'Alejandro_123',
@@ -110,7 +96,6 @@ class PostSection extends StatelessWidget {
           userImage: 'assets/images.png',
           postImage: 'assets/descarga.jpg',
           comments: ['me voy a ver aviones'],
-          postHeight: 400,
         ),
         PostItem(
           username: 'juanillo05',
@@ -118,12 +103,9 @@ class PostSection extends StatelessWidget {
           userImage: 'assets/images.png',
           postImage: 'assets/descarga.jpg',
           comments: ['canya canya'],
-          postHeight: 400,
         ),
-        // Agrega más publicaciones aquí
       ],
     );
-
   }
 }
 
@@ -140,51 +122,27 @@ class PostItem extends StatelessWidget {
     required this.userImage,
     required this.postImage,
     required this.comments,
-    required int postHeight,
   });
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          // Botón de salir
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () => _logout(context),
-            tooltip: 'Salir',
-          ),
-        ],
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Menú',
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Encabezado del usuario
+
         ListTile(
           leading: CircleAvatar(
-            backgroundImage: AssetImage(userImage), // Imagen de usuario
-
+            backgroundImage: AssetImage(userImage),
           ),
           title: Text(username),
           subtitle: Text(location),
           trailing: Icon(Icons.more_vert),
         ),
-        // Imagen de la publicación
+
         Center(
           child: Image.asset(postImage),
         ),
-        // Iconos de interacciones
+  
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Row(
@@ -206,10 +164,10 @@ class PostItem extends StatelessWidget {
                   ),
                 ],
               ),
-              // Otros widgets aquí...
             ],
           ),
         ),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
@@ -217,18 +175,19 @@ class PostItem extends StatelessWidget {
             children: comments.map((comment) => Text(comment)).toList(),
           ),
         ),
-        // Campo de texto para agregar un nuevo comentario
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: TextField(
             decoration: InputDecoration(
-              hintText: 'Add a comment...',
+              hintText: 'Añadir un comentario...',
             ),
             onSubmitted: (value) {
-              // Manejar el envío del comentario aquí
+      
             },
           ),
         ),
+        Divider(),
       ],
     );
   }

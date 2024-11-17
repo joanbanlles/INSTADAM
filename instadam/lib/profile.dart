@@ -19,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Lista de imágenes para las publicaciones
+
     final List<String> postImages = [
       'assets/images5.jpg',
       'assets/image2.png',
@@ -46,7 +46,7 @@ class ProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Información del perfil
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -62,7 +62,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Estadísticas del perfil
+
                   Expanded(
                     child: Column(
                       children: [
@@ -75,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 10),
-                        // Nombre y Bio del perfil
+   
                         const Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -99,7 +99,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            // Botones de perfil
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -111,7 +111,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // Historias destacadas
+
             SizedBox(
               height: 100,
               child: ListView(
@@ -131,7 +131,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            // Cuadrícula de publicaciones
+
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -140,12 +140,12 @@ class ProfileScreen extends StatelessWidget {
                 crossAxisSpacing: 2,
                 mainAxisSpacing: 2,
               ),
-              itemCount: postImages.length, // Número de publicaciones
+              itemCount: postImages.length,
               itemBuilder: (context, index) {
                 return Container(
                   color: const Color.fromARGB(255, 106, 106, 106),
                   child: Image.asset(
-                    postImages[index], // Cargar la imagen correspondiente de la lista
+                    postImages[index], 
                     fit: BoxFit.cover,
                   ),
                 );
@@ -157,7 +157,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Helper para columna de estadísticas
+
   Column _buildStatColumn(String number, String label) {
     return Column(
       children: [
@@ -176,7 +176,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Helper para botones
+
   ElevatedButton _buildButton(String text) {
     return ElevatedButton(
       onPressed: () {},
@@ -193,7 +193,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Helper para destacados de historias
   Column _buildHighlight(String title, String imagePath) {
     return Column(
       children: [

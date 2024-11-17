@@ -42,13 +42,13 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   List<File> capturedImages = [];
   final ImagePicker _picker = ImagePicker();
-  String? selectedImage; // Almacena la imagen seleccionada para mostrarla arriba
+  String? selectedImage; 
 
   @override
   void initState() {
     super.initState();
     _loadCapturedImages();
-    selectedImage = 'assets/descarga.jpg'; // Imagen por defecto en la parte superior
+    selectedImage = 'assets/descarga.jpg'; 
   }
 
   Future<void> _saveCapturedImages() async {
@@ -73,7 +73,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       if (photo != null) {
         setState(() {
           capturedImages.add(File(photo.path));
-          selectedImage = photo.path; // Establecer como imagen seleccionada
+          selectedImage = photo.path; 
         });
         await _saveCapturedImages();
       }
@@ -88,7 +88,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       if (photo != null) {
         setState(() {
           capturedImages.add(File(photo.path));
-          selectedImage = photo.path; // Establecer como imagen seleccionada
+          selectedImage = photo.path; 
         });
         await _saveCapturedImages();
       }
@@ -100,9 +100,9 @@ class _NewPostScreenState extends State<NewPostScreen> {
   void _deleteSelectedImage() {
     if (selectedImage == null) return;
     setState(() {
-      // Eliminar la imagen seleccionada de la lista si es una foto capturada
+     
       capturedImages.removeWhere((file) => file.path == selectedImage);
-      selectedImage = null; // Restablecer imagen seleccionada
+      selectedImage = null;
     });
     _saveCapturedImages();
   }
@@ -137,7 +137,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Parte superior: Mostrar la imagen seleccionada
+
             Container(
               height: 200,
               decoration: BoxDecoration(
@@ -189,7 +189,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImage = imagePaths[index]; // Cambiar la imagen seleccionada
+                          selectedImage = imagePaths[index]; 
                         });
                       },
                       child: Container(
@@ -214,7 +214,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     return GestureDetector(
                       onTap: () {
                         setState(() {
-                          selectedImage = capturedImages[capturedIndex].path; // Cambiar la imagen seleccionada
+                          selectedImage = capturedImages[capturedIndex].path; 
                         });
                       },
                       child: Container(

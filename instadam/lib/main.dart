@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-
-import 'sign_up.dart';
+import 'home.dart';
 import 'login.dart';
-
-import 'package:instadam/home.dart';
-import 'package:instadam/Profile.dart';
-import 'package:instadam/settings.dart';
-import 'package:instadam/newpost.dart';
-
+import 'profile.dart';
+import 'settings.dart';
+import 'newpost.dart';
+import 'signup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,26 +15,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-
       title: 'App de Ejemplo',
-      initialRoute: '/signup',  // Cambia a la pantalla de registro por defecto
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      initialRoute: '/signup',
       routes: {
-        '/signup': (context) => const SignUp(), // Cambia SignUpScreen a SignUp
-        '/login': (context) => LoginScreen(),
-        '/home': (context) => HomeScreen(),
-
-      debugShowMaterialGrid: false,
-      title: 'Flutter Navigation',
-      initialRoute: '/',
-      routes: {
-        '/': (context) => MainScreen(),
-        '/home': (context) => Home(),
+        '/signup': (context) => const SignUp(),
+        '/login': (context) => Login(),
+        '/home': (context) => MainScreen(), 
         '/profile': (context) => Profile(),
         '/settings': (context) => Settings(),
         '/newpost': (context) => Newpost(),
-
       },
     );
   }
@@ -53,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     Home(),
-    ProfileScreen(),
+    Profile(),
     Settings(),
     Newpost(),
   ];
@@ -63,12 +53,9 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        selectedIconTheme: IconThemeData(color: Colors.black),
-        unselectedIconTheme: IconThemeData(color: Colors.black),
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
