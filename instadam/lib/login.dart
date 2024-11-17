@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:instadam/signin.dart';
 
+void main() {
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Instadam',
+    home: Login(),
+  ));
+}
 
 class Login extends StatefulWidget {
   const Login({super.key});
