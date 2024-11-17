@@ -1,21 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
+class Home extends StatelessWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Instadam'),
+        ),
+        body: InstadamBody(),
+      ),
+    );
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+class InstadamBody extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          StoriesSection(),
+          Divider(),
+          PostSection(),
+        ],
+      ),
+    );
+  }
+}
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Pantalla de Menú'),
-    Text('Pantalla de M\'agrades'),
-    Text('Pantalla de Perfil'),
+class StoriesSection extends StatelessWidget {
+  final List<String> userNames = [
+    'juanillo05',
+    'orlando_212',
+    'gerard_farre',
+    'alejandro_drope',
+    'carlitos_123',
   ];
+
 
   // Función para cerrar sesión sin eliminar las credenciales guardadas
   void _logout(BuildContext context) {
@@ -27,10 +51,101 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
-  }
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      height: 100,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: userNames.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 35,
+                  backgroundImage: AssetImage('assets/image$index.png'),
+                ),
+                SizedBox(height: 5),
+                Text(userNames[index]),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class PostSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      children: [
+        // Publicación 1
+        PostItem(
+          username: 'gerard_farre',
+          location: 'casa elodia',
+          userImage: 'assets/images.png',
+          postImage: 'assets/descarga.jpg',
+          comments: ['¡Qué bonito!', '¡Me encanta!'],
+          postHeight: 400, // Adjust the height as needed
+        ),
+        // Publicación 2
+        PostItem(
+          username: 'Orlando_212',
+          location: 'CKNO',
+          userImage: 'assets/images.png',
+          postImage: 'assets/descarga.jpg',
+          comments: ['Aspolandole'],
+          postHeight: 400,
+        ),
+        PostItem(
+          username: 'Alejandro_123',
+          location: 'newyork',
+          userImage: 'assets/images.png',
+          postImage: 'assets/descarga.jpg',
+          comments: ['me voy a ver aviones'],
+          postHeight: 400,
+        ),
+        PostItem(
+          username: 'juanillo05',
+          location: 'florida135',
+          userImage: 'assets/images.png',
+          postImage: 'assets/descarga.jpg',
+          comments: ['canya canya'],
+          postHeight: 400,
+        ),
+        // Agrega más publicaciones aquí
+      ],
+    );
+
+  }
+}
+
+class PostItem extends StatelessWidget {
+  final String username;
+  final String location;
+  final String userImage;
+  final String postImage;
+  final List<String> comments;
+
+  PostItem({
+    required this.username,
+    required this.location,
+    required this.userImage,
+    required this.postImage,
+    required this.comments,
+    required int postHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -51,20 +166,70 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.menu),
             label: 'Menú',
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Encabezado del usuario
+        ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage(userImage), // Imagen de usuario
+
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'M\'agrades',
+          title: Text(username),
+          subtitle: Text(location),
+          trailing: Icon(Icons.more_vert),
+        ),
+        // Imagen de la publicación
+        Center(
+          child: Image.asset(postImage),
+        ),
+        // Iconos de interacciones
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.favorite_border),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.chat_bubble_outline),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              // Otros widgets aquí...
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: comments.map((comment) => Text(comment)).toList(),
           ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
-      ),
+        ),
+        // Campo de texto para agregar un nuevo comentario
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: 'Add a comment...',
+            ),
+            onSubmitted: (value) {
+              // Manejar el envío del comentario aquí
+            },
+          ),
+        ),
+      ],
     );
   }
 }

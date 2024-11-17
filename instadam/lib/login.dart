@@ -2,14 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'sign_up.dart';
 
+
 class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
+
+void main() {
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Instadam',
+    home: Login(),
+  ));
+}
+
+class Login extends StatefulWidget {
+  const Login({super.key});
+
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<Login> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
@@ -148,9 +161,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-<<<<<<< Updated upstream
+
           ),
-=======
+
             const SizedBox(height: 20),
             TextField(
               controller: _usernameController,
@@ -184,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: const Text('Registrar-se'),
             ),
           ],
->>>>>>> Stashed changes
+
         ),
       ),
     );
