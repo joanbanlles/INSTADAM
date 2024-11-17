@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -38,6 +39,18 @@ class StoriesSection extends StatelessWidget {
     'alejandro_drope',
     'carlitos_123',
   ];
+
+
+  // Función para cerrar sesión sin eliminar las credenciales guardadas
+  void _logout(BuildContext context) {
+    // Navega de vuelta a la pantalla de inicio de sesión
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +123,7 @@ class PostSection extends StatelessWidget {
         // Agrega más publicaciones aquí
       ],
     );
+
   }
 }
 
@@ -131,6 +145,28 @@ class PostItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: [
+          // Botón de salir
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () => _logout(context),
+            tooltip: 'Salir',
+          ),
+        ],
+      ),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu),
+            label: 'Menú',
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -138,6 +174,7 @@ class PostItem extends StatelessWidget {
         ListTile(
           leading: CircleAvatar(
             backgroundImage: AssetImage(userImage), // Imagen de usuario
+
           ),
           title: Text(username),
           subtitle: Text(location),

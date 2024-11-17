@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
-class SignInScreen extends StatelessWidget {
-  const SignInScreen({super.key});
+void main() {
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Instadam',
+    home: SignIn(),
+  ));
+}
+class SignIn extends StatelessWidget {
+  const SignIn({super.key});
 
   @override
   Widget build(BuildContext context) {

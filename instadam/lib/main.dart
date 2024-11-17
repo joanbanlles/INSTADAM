@@ -1,17 +1,33 @@
 import 'package:flutter/material.dart';
+
+import 'sign_up.dart';
+import 'login.dart';
+
 import 'package:instadam/home.dart';
 import 'package:instadam/Profile.dart';
 import 'package:instadam/settings.dart';
 import 'package:instadam/newpost.dart';
 
+
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
+
+      title: 'App de Ejemplo',
+      initialRoute: '/signup',  // Cambia a la pantalla de registro por defecto
+      routes: {
+        '/signup': (context) => const SignUp(), // Cambia SignUpScreen a SignUp
+        '/login': (context) => LoginScreen(),
+        '/home': (context) => HomeScreen(),
+
       debugShowMaterialGrid: false,
       title: 'Flutter Navigation',
       initialRoute: '/',
@@ -21,6 +37,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => Profile(),
         '/settings': (context) => Settings(),
         '/newpost': (context) => Newpost(),
+
       },
     );
   }
