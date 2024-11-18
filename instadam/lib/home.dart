@@ -1,40 +1,41 @@
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
+  const Home({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () => _logout(context),
-            tooltip: 'Salir',
-          ),
-        ],
+        title: const Text('Instadam'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            StoriesSection(),
-            Divider(),
-            PostSection(),
-          ],
-        ),
-      ),
+      body: const InstadamBody(),
     );
   }
+}
 
- 
-  void _logout(BuildContext context) {
-    Navigator.pushReplacementNamed(context, '/login');
+class InstadamBody extends StatelessWidget {
+  const InstadamBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const StoriesSection(),
+          const Divider(),
+          const PostSection(),
+        ],
+      ),
+    );
   }
 }
 
 class StoriesSection extends StatelessWidget {
-  final List<String> userNames = [
+  const StoriesSection({super.key});
+
+  final List<String> userNames = const [
     'juanillo05',
     'orlando_212',
     'gerard_farre',
@@ -58,7 +59,7 @@ class StoriesSection extends StatelessWidget {
                   radius: 35,
                   backgroundImage: AssetImage('assets/image$index.png'),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(userNames[index]),
               ],
             ),
@@ -70,26 +71,31 @@ class StoriesSection extends StatelessWidget {
 }
 
 class PostSection extends StatelessWidget {
+  const PostSection({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      children: [
+      physics: const NeverScrollableScrollPhysics(),
+      children: const [
+        // Publicación 1
         PostItem(
           username: 'gerard_farre',
           location: 'casa elodia',
           userImage: 'assets/images.png',
           postImage: 'assets/descarga.jpg',
-          comments: ['¡Qué bonito!', '¡Me encanta!'],
+          comments: ['Nice post!', 'Awesome!'],
         ),
+        // Publicación 2
         PostItem(
-          username: 'Orlando_212',
-          location: 'CKNO',
+          username: 'orlando_212',
+          location: 'Madrid',
           userImage: 'assets/images.png',
           postImage: 'assets/descarga.jpg',
-          comments: ['Aspolandole'],
+          comments: ['Great!', 'Love it!'],
         ),
+
         PostItem(
           username: 'Alejandro_123',
           location: 'newyork',
@@ -110,13 +116,8 @@ class PostSection extends StatelessWidget {
 }
 
 class PostItem extends StatelessWidget {
-  final String username;
-  final String location;
-  final String userImage;
-  final String postImage;
-  final List<String> comments;
-
-  PostItem({
+  const PostItem({
+    super.key,
     required this.username,
     required this.location,
     required this.userImage,
@@ -124,71 +125,35 @@ class PostItem extends StatelessWidget {
     required this.comments,
   });
 
+  final String username;
+  final String location;
+  final String userImage;
+  final String postImage;
+  final List<String> comments;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-
-        ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage(userImage),
-          ),
-          title: Text(username),
-          subtitle: Text(location),
-          trailing: Icon(Icons.more_vert),
-        ),
-
-        Center(
-          child: Image.asset(postImage),
-        ),
-  
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.favorite_border),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.chat_bubble_outline),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: comments.map((comment) => Text(comment)).toList(),
-          ),
-        ),
-
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: TextField(
-            decoration: InputDecoration(
-              hintText: 'Añadir un comentario...',
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage(userImage),
             ),
-            onSubmitted: (value) {
-      
-            },
+            title: Text(username),
+            subtitle: Text(location),
           ),
-        ),
-        Divider(),
-      ],
+          Image.asset(postImage),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: comments.map((comment) => Text(comment)).toList(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -26,9 +26,11 @@ class _SignUpState extends State<SignUp> {
       return;
     }
 
-    final userExists = SignUp.users.any((user) => user['email'] == email || user['username'] == username);
+    final userExists = SignUp.users
+        .any((user) => user['email'] == email || user['username'] == username);
     if (userExists) {
-      _showErrorDialog('El correo electrónico o el nombre de usuario ya están en uso.');
+      _showErrorDialog(
+          'El correo electrónico o el nombre de usuario ya están en uso.');
       return;
     }
 
@@ -84,15 +86,18 @@ class _SignUpState extends State<SignUp> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/logo.png', height: 100), // Añade el logo aquí
+                Image.asset('assets/images/logo.png',
+                    height: 100), // Añade el logo aquí
                 SizedBox(height: 20),
                 _buildRoundedTextField(_nameController, 'Nombre Completo'),
                 SizedBox(height: 10),
                 _buildRoundedTextField(_emailController, 'Correo Electrónico'),
                 SizedBox(height: 10),
-                _buildRoundedTextField(_usernameController, 'Nombre de Usuario'),
+                _buildRoundedTextField(
+                    _usernameController, 'Nombre de Usuario'),
                 SizedBox(height: 10),
-                _buildRoundedTextField(_passwordController, 'Contraseña', obscureText: true),
+                _buildRoundedTextField(_passwordController, 'Contraseña',
+                    obscureText: true),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _register,
@@ -105,7 +110,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                   child: Text(
                     'Registrarse',
-                    style: TextStyle(color: Colors.white), // Cambié el texto a blanco
+                    style: TextStyle(
+                        color: Colors.white), // Cambié el texto a blanco
                   ),
                 ),
                 SizedBox(height: 10),
@@ -137,7 +143,9 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Widget _buildRoundedTextField(TextEditingController controller, String labelText, {bool obscureText = false}) {
+  Widget _buildRoundedTextField(
+      TextEditingController controller, String labelText,
+      {bool obscureText = false}) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -146,7 +154,7 @@ class _SignUpState extends State<SignUp> {
           borderRadius: BorderRadius.circular(10),
         ),
         filled: true,
-        fillColor: Colors.grey[200], 
+        fillColor: Colors.grey[200],
       ),
       obscureText: obscureText,
     );

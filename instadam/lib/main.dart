@@ -16,12 +16,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowMaterialGrid: false,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Navigation',
-      initialRoute: '/',
+      initialRoute: '/login',
       routes: {
-        '/signup': (context) => const SignUp(),
+        '/signup': (context) => SignUp(),
         '/login': (context) => Login(),
         '/home': (context) => MainScreen(),
         '/profile': (context) => Profile(),
