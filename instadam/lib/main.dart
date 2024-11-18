@@ -16,22 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-<<<<<<< Updated upstream
-      title: 'App de Ejemplo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      initialRoute: '/signup',
-=======
       debugShowMaterialGrid: false,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Navigation',
       initialRoute: '/',
->>>>>>> Stashed changes
       routes: {
         '/signup': (context) => const SignUp(),
         '/login': (context) => Login(),
-        '/home': (context) => MainScreen(), 
+        '/home': (context) => MainScreen(),
         '/profile': (context) => Profile(),
         '/settings': (context) => Settings(),
         '/newpost': (context) => Newpost(),
