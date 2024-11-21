@@ -28,32 +28,6 @@ flutter:
 
   assets:
     - assets/images/logo.png
-<<<<<<< Updated upstream
-    - assets/descarga.jpg
-    - assets/images.png
-    - assets/image0.png
-    - assets/image1.png
-    - assets/image2.png
-    - assets/image3.png
-    - assets/image4.png
-    - assets/images1.jpg
-    - assets/images3.jpg
-    - assets/images4.jpg
-    - assets/images5.jpg
-    - assets/images2.jpg
-    - assets/images7.jpg
-    - assets/images8.jpg
-    - assets/images9.jpg
-    - assets/image10.png
-    - assets/images11.jpg
-    - assets/images12.jpg
-    - assets/images13.jpg
-    - assets/images14.jpg
-    - assets/foto15.webp
-    - assets/images16.webp
-    - assets/images17.jpg
-    - assets/images18.jpg
-    - assets/images19.jpg
-=======
+
     - assets/
->>>>>>> Stashed changes
+
