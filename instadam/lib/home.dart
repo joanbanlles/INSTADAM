@@ -79,7 +79,6 @@ class PostSection extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: const [
-        // Publicación 1
         PostItem(
           username: 'gerard_farre',
           location: 'casa elodia',
@@ -87,7 +86,6 @@ class PostSection extends StatelessWidget {
           postImage: 'assets/descarga.jpg',
           comments: ['Nice post!', 'Awesome!'],
         ),
-        // Publicación 2
         PostItem(
           username: 'orlando_212',
           location: 'Madrid',
@@ -95,7 +93,6 @@ class PostSection extends StatelessWidget {
           postImage: 'assets/descarga.jpg',
           comments: ['Great!', 'Love it!'],
         ),
-
         PostItem(
           username: 'Alejandro_123',
           location: 'newyork',
@@ -133,27 +130,52 @@ class PostItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundImage: AssetImage(userImage),
-            ),
-            title: Text(username),
-            subtitle: Text(location),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          leading: CircleAvatar(
+            backgroundImage: AssetImage(userImage),
           ),
-          Image.asset(postImage),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: comments.map((comment) => Text(comment)).toList(),
-            ),
+          title: Text(username),
+          subtitle: Text(location),
+          trailing: Icon(Icons.more_vert),
+        ),
+        Center(
+          child: Image.asset(postImage),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.favorite_border),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.chat_bubble_outline),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: comments.map((comment) => Text(comment)).toList(),
+          ),
+        ),
+      ],
     );
   }
 }
