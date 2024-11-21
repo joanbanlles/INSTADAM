@@ -61,6 +61,7 @@ class _SignUpState extends State<SignUp> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        
         title: Text('Error'),
         content: Text(message),
         actions: [
@@ -84,7 +85,17 @@ class _SignUpState extends State<SignUp> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset('assets/images/logo.png', height: 100), // Añade el logo aquí
+                Text(
+                '¡Bienvenido a nuestra aplicación!',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+                SizedBox(height: 8),
+                 Text(
+                'Crea una cuenta para comenzar.',
+                  style: TextStyle(fontSize: 16),
+                ),
+                  SizedBox(height: 20),
+                  Image.asset('assets/images/logo.png', height: 100), 
                 SizedBox(height: 20),
                 _buildRoundedTextField(_nameController, 'Nombre Completo'),
                 SizedBox(height: 10),

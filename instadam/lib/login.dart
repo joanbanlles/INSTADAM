@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'signup.dart';
 
-
-
-
 void main() {
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -15,7 +12,6 @@ void main() {
 
 class Login extends StatefulWidget {
   const Login({super.key});
-
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -32,7 +28,6 @@ class _LoginScreenState extends State<Login> {
     _loadSavedCredentials();
   }
 
-  
   Future<void> _loadSavedCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('savedUsername');
@@ -48,7 +43,6 @@ class _LoginScreenState extends State<Login> {
     }
   }
 
- 
   Future<void> _saveCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     if (_rememberMe) {
@@ -67,12 +61,12 @@ class _LoginScreenState extends State<Login> {
     final password = _passwordController.text;
 
     final user = SignUp.users.firstWhere(
-          (user) => user['username'] == username && user['password'] == password,
+      (user) => user['username'] == username && user['password'] == password,
       orElse: () => <String, String>{},
     );
 
     if (user.isNotEmpty) {
-      await _saveCredentials(); 
+      await _saveCredentials();
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       showDialog(
@@ -102,11 +96,22 @@ class _LoginScreenState extends State<Login> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Text(
+                  '¡Perfecto, ya tienes la cuenta registrada!',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Ahora inicia sesión.',
+                  style: TextStyle(fontSize: 16),
+                ),
                 Image.asset('assets/images/logo.png', height: 100),
                 SizedBox(height: 20),
-                _buildRoundedTextField(_usernameController, 'Nombre de usuario'),
+                _buildRoundedTextField(
+                    _usernameController, 'Nombre de usuario'),
                 SizedBox(height: 10),
-                _buildRoundedTextField(_passwordController, 'Contraseña', obscureText: true),
+                _buildRoundedTextField(_passwordController, 'Contraseña',
+                    obscureText: true),
                 SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -160,14 +165,15 @@ class _LoginScreenState extends State<Login> {
                 ),
               ],
             ),
-
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRoundedTextField(TextEditingController controller, String labelText, {bool obscureText = false}) {
+  Widget _buildRoundedTextField(
+      TextEditingController controller, String labelText,
+      {bool obscureText = false}) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
