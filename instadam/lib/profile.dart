@@ -3,14 +3,9 @@ import 'package:flutter/material.dart';
 class Profile extends StatelessWidget {
   const Profile({super.key});
 
-
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: ProfileScreen(),
-      debugShowCheckedModeBanner: false,
-    );
+    return const ProfileScreen();
   }
 }
 
@@ -19,7 +14,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final List<String> postImages = [
       'assets/images5.jpg',
       'assets/image2.png',
@@ -46,7 +40,6 @@ class ProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -62,7 +55,6 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-
                   Expanded(
                     child: Column(
                       children: [
@@ -75,7 +67,6 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 10),
-   
                         const Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -99,7 +90,6 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -111,7 +101,6 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-
             SizedBox(
               height: 100,
               child: ListView(
@@ -131,7 +120,6 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -145,7 +133,7 @@ class ProfileScreen extends StatelessWidget {
                 return Container(
                   color: const Color.fromARGB(255, 106, 106, 106),
                   child: Image.asset(
-                    postImages[index], 
+                    postImages[index],
                     fit: BoxFit.cover,
                   ),
                 );
@@ -156,7 +144,6 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Column _buildStatColumn(String number, String label) {
     return Column(
@@ -175,7 +162,6 @@ class ProfileScreen extends StatelessWidget {
       ],
     );
   }
-
 
   ElevatedButton _buildButton(String text) {
     return ElevatedButton(

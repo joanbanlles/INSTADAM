@@ -2,6 +2,8 @@ name: instadam
 description: "A new Flutter project."
 publish_to: 'none'
 
+  
+
 version: 1.0.0+1
 
 environment:
@@ -26,6 +28,7 @@ flutter:
 
   assets:
     - assets/images/logo.png
+<<<<<<< Updated upstream
     - assets/descarga.jpg
     - assets/images.png
     - assets/image0.png
@@ -42,3 +45,15 @@ flutter:
     - assets/images8.jpg
     - assets/images9.jpg
     - assets/image10.png
+    - assets/images11.jpg
+    - assets/images12.jpg
+    - assets/images13.jpg
+    - assets/images14.jpg
+    - assets/foto15.webp
+    - assets/images16.webp
+    - assets/images17.jpg
+    - assets/images18.jpg
+    - assets/images19.jpg
+=======
+    - assets/
+>>>>>>> Stashed changes

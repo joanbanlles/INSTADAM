@@ -17,15 +17,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: 'App de Ejemplo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       initialRoute: '/signup',
+
       routes: {
-        '/signup': (context) => const SignUp(),
+        '/signup': (context) => SignUp(),
         '/login': (context) => Login(),
-        '/home': (context) => MainScreen(), 
+        '/home': (context) => MainScreen(),
         '/profile': (context) => Profile(),
         '/settings': (context) => Settings(),
         '/newpost': (context) => Newpost(),
