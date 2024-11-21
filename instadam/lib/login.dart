@@ -96,16 +96,17 @@ class _LoginScreenState extends State<Login> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Image.asset('assets/images/logo.png', height: 100),
+                SizedBox(height: 20),
                 Text(
-                  '¡Perfecto, ya tienes la cuenta registrada!',
+                  '¡Conecta, crea y deja huella !',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Ahora inicia sesión.',
+                  'Inicia sesión',
                   style: TextStyle(fontSize: 16),
                 ),
-                Image.asset('assets/images/logo.png', height: 100),
                 SizedBox(height: 20),
                 _buildRoundedTextField(
                     _usernameController, 'Nombre de usuario'),
