@@ -2,8 +2,6 @@ name: instadam
 description: "A new Flutter project."
 publish_to: 'none'
 
-  
-
 version: 1.0.0+1
 
 environment:
@@ -13,10 +11,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.0.15
-  image_picker: ^1.1.2  # Dependencia agregada para manejar la cámara
+  image_picker: ^1.1.2
+  sqflite: ^2.0.0+4
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +27,4 @@ flutter:
 
   assets:
     - assets/images/logo.png
-
     - assets/
-

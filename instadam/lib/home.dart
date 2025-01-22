@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'DatabaseHelper.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -25,7 +26,7 @@ class InstadamBody extends StatelessWidget {
         children: [
           const StoriesSection(),
           const Divider(),
-          const PostSection(),
+          PostSection(),
         ],
       ),
     );
@@ -71,8 +72,6 @@ class StoriesSection extends StatelessWidget {
 }
 
 class PostSection extends StatelessWidget {
-  const PostSection({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -80,53 +79,81 @@ class PostSection extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       children: const [
         PostItem(
+          postId: 1,
           username: 'gerard_farre',
           location: 'casa elodia',
           userImage: 'assets/images.png',
           postImage: 'assets/descarga.jpg',
-          comments: ['Nice post!', 'Awesome!'],
         ),
         PostItem(
+          postId: 2,
           username: 'orlando_212',
           location: 'Madrid',
           userImage: 'assets/images.png',
           postImage: 'assets/descarga.jpg',
-          comments: ['Great!', 'Love it!'],
-        ),
-        PostItem(
-          username: 'Alejandro_123',
-          location: 'newyork',
-          userImage: 'assets/images.png',
-          postImage: 'assets/descarga.jpg',
-          comments: ['me voy a ver aviones'],
-        ),
-        PostItem(
-          username: 'juanillo05',
-          location: 'florida135',
-          userImage: 'assets/images.png',
-          postImage: 'assets/descarga.jpg',
-          comments: ['canya canya'],
         ),
       ],
     );
   }
 }
 
-class PostItem extends StatelessWidget {
+class PostItem extends StatefulWidget {
   const PostItem({
     super.key,
+    required this.postId,
     required this.username,
     required this.location,
     required this.userImage,
     required this.postImage,
-    required this.comments,
   });
 
+  final int postId;
   final String username;
   final String location;
   final String userImage;
   final String postImage;
-  final List<String> comments;
+
+  @override
+  _PostItemState createState() => _PostItemState();
+}
+
+class _PostItemState extends State<PostItem> {
+  List<Map<String, dynamic>> comments = [];
+  bool isLiked = false;
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchComments();
+    loadLikeState();
+  }
+
+  Future<void> fetchComments() async {
+    final data = await _databaseHelper.getComments(widget.postId);
+    setState(() {
+      comments = data;
+    });
+  }
+
+  Future<void> addComment(String content) async {
+    await _databaseHelper.insertComment(widget.postId, content);
+    fetchComments();
+  }
+
+  Future<void> loadLikeState() async {
+    final liked = await _databaseHelper.isPostLiked(widget.postId);
+    setState(() {
+      isLiked = liked;
+    });
+  }
+
+  void toggleLike() async {
+    setState(() {
+      isLiked = !isLiked;
+    });
+    await _databaseHelper.insertLike(widget.postId, isLiked);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,44 +162,45 @@ class PostItem extends StatelessWidget {
       children: [
         ListTile(
           leading: CircleAvatar(
-            backgroundImage: AssetImage(userImage),
+            backgroundImage: AssetImage(widget.userImage),
           ),
-          title: Text(username),
-          subtitle: Text(location),
-          trailing: Icon(Icons.more_vert),
+          title: Text(widget.username),
+          subtitle: Text(widget.location),
+          trailing: const Icon(Icons.more_vert),
         ),
         Center(
-          child: Image.asset(postImage),
+          child: Image.asset(widget.postImage),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.favorite_border),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.chat_bubble_outline),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () {},
-                  ),
-                ],
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(
+                isLiked ? Icons.favorite : Icons.favorite_border,
+                color: isLiked ? Colors.red : Colors.black,
               ),
-            ],
-          ),
+              onPressed: toggleLike,
+            ),
+            const SizedBox(width: 10),
+            Text(isLiked ? 'You liked this' : 'Like'),
+          ],
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: comments.map((comment) => Text(comment)).toList(),
+            children: [
+              ...comments.map((comment) => Text(comment['content'])),
+              TextField(
+                onSubmitted: (value) {
+                  if (value.isNotEmpty) {
+                    addComment(value);
+                  }
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Add a comment',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
           ),
         ),
       ],
