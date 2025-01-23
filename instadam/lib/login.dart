@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'signup.dart';
-
-void main() {
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: 'Instadam',
-    home: Login(),
-  ));
-}
+import 'DatabaseHelper.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  const Login({Key? key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -21,6 +13,7 @@ class _LoginScreenState extends State<Login> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -60,29 +53,40 @@ class _LoginScreenState extends State<Login> {
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    final user = SignUp.users.firstWhere(
-      (user) => user['username'] == username && user['password'] == password,
-      orElse: () => <String, String>{},
-    );
-
-    if (user.isNotEmpty) {
-      await _saveCredentials();
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Usuario o contraseña incorrectos'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
+    if (username.isEmpty || password.isEmpty) {
+      _showErrorDialog('Por favor, ingresa usuario y contraseña');
+      return;
     }
+
+    try {
+      final user = await _databaseHelper.getUser(username, password);
+
+      if (user != null && user.isNotEmpty) {
+        await _saveCredentials();
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        _showErrorDialog('Usuario o contraseña incorrectos');
+      }
+    } catch (e) {
+      print("Error durante el inicio de sesión: $e");
+      _showErrorDialog('Ocurrió un error al iniciar sesión');
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -128,7 +132,7 @@ class _LoginScreenState extends State<Login> {
                     Text('Recordar credenciales'),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () => _login(context),
                   style: ElevatedButton.styleFrom(
@@ -136,9 +140,9 @@ class _LoginScreenState extends State<Login> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    minimumSize: Size(double.infinity, 50),
+                    minimumSize: const Size(double.infinity, 50),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Iniciar Sesión',
                     style: TextStyle(color: Colors.white),
                   ),

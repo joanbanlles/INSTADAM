@@ -5,9 +5,12 @@ import 'profile.dart';
 import 'settings.dart';
 import 'newpost.dart';
 import 'signup.dart';
+import 'DatabaseHelper.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseHelper().initDatabase();
 }
 
 class MyApp extends StatelessWidget {
@@ -17,13 +20,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-
       title: 'App de Ejemplo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       initialRoute: '/signup',
-
       routes: {
         '/signup': (context) => SignUp(),
         '/login': (context) => Login(),

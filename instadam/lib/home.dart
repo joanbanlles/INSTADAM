@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instadam/comments.dart';
 import 'DatabaseHelper.dart';
 
 class Home extends StatelessWidget {
@@ -181,27 +182,19 @@ class _PostItemState extends State<PostItem> {
               onPressed: toggleLike,
             ),
             const SizedBox(width: 10),
-            Text(isLiked ? 'You liked this' : 'Like'),
+            TextButton(
+              onPressed: () {
+                // Navegación a la pantalla de comentarios
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CommentsScreen(postId: widget.postId),
+                  ),
+                );
+              },
+              child: const Text('View Comments'),
+            ),
           ],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Column(
-            children: [
-              ...comments.map((comment) => Text(comment['content'])),
-              TextField(
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    addComment(value);
-                  }
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Add a comment',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
         ),
       ],
     );

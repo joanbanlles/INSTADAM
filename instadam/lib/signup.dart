@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'DatabaseHelper.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -14,8 +15,9 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  void _register() {
+  void _register() async {
     final name = _nameController.text;
     final email = _emailController.text;
     final username = _usernameController.text;
@@ -26,15 +28,14 @@ class _SignUpState extends State<SignUp> {
       return;
     }
 
-    final userExists = SignUp.users
-        .any((user) => user['email'] == email || user['username'] == username);
+    final userExists = await _databaseHelper.checkUserExists(email, username);
     if (userExists) {
       _showErrorDialog(
           'El correo electrónico o el nombre de usuario ya están en uso.');
       return;
     }
 
-    SignUp.users.add({
+    await _databaseHelper.insertUser({
       'name': name,
       'email': email,
       'username': username,
@@ -86,30 +87,33 @@ class _SignUpState extends State<SignUp> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Image.asset('assets/images/logo.png', height: 100),
-                Text(
+                const Text(
                   '¡Conecta, crea y deja huella !',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
                   'Crea una cuenta para comenzar',
                   style: TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildRoundedTextField(_nameController, 'Nombre Completo'),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 _buildRoundedTextField(_emailController, 'Correo Electrónico'),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 _buildRoundedTextField(
                     _usernameController, 'Nombre de Usuario'),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 _buildRoundedTextField(_passwordController, 'Contraseña',
                     obscureText: true),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _register,
+                  onPressed: () async {
+                    _register();
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
                     shape: RoundedRectangleBorder(
@@ -117,13 +121,12 @@ class _SignUpState extends State<SignUp> {
                     ),
                     minimumSize: Size(double.infinity, 50),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Registrarse',
-                    style: TextStyle(
-                        color: Colors.white), // Cambié el texto a blanco
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   'OR',
                   style: TextStyle(color: Colors.grey),

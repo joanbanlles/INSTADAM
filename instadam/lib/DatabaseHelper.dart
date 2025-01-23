@@ -39,7 +39,80 @@ class DatabaseHelper {
     );
   }
 
-  // Inserta o actualiza el estado del like
+  Future<Database> initDatabase() async {
+    final dbPath = await getDatabasesPath();
+    return openDatabase(
+      join(dbPath, 'instadam.db'),
+      onCreate: (db, version) {
+        print("Creando tabla users...");
+        return db.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          email TEXT NOT NULL UNIQUE,
+          username TEXT NOT NULL UNIQUE,
+          password TEXT NOT NULL
+        );
+      ''');
+      },
+      onOpen: (db) async {
+        print("Verificando si la tabla users existe...");
+        var tableExists = await db.rawQuery(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='users'");
+        if (tableExists.isEmpty) {
+          print("La tabla users no existe, creándola...");
+          await db.execute('''
+          CREATE TABLE users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL
+          );
+        ''');
+          print("Tabla users creada exitosamente");
+        } else {
+          print("La tabla users ya existe");
+        }
+      },
+      version: 1,
+    );
+  }
+
+  Future<void> insertUser(Map<String, dynamic> user) async {
+    final db = await database;
+    await db.insert('users', user, conflictAlgorithm: ConflictAlgorithm.abort);
+  }
+
+  Future<bool> checkUserExists(String email, String username) async {
+    try {
+      final db = await database;
+      final result = await db.query(
+        'users',
+        where: 'email = ? OR username = ?',
+        whereArgs: [email, username],
+      );
+      return result.isNotEmpty;
+    } catch (e) {
+      print("Error en checkUserExists: $e");
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUser(
+      String username, String password) async {
+    final db = await database;
+    final result = await db.query(
+      'users',
+      where: 'username = ? AND password = ?',
+      whereArgs: [username, password],
+    );
+    if (result.isNotEmpty) {
+      return result.first;
+    }
+    return null;
+  }
+
   Future<void> insertLike(int postId, bool isLiked) async {
     final db = await database;
     await db.insert(
@@ -49,7 +122,6 @@ class DatabaseHelper {
     );
   }
 
-  // Verifica si un post está marcado como like
   Future<bool> isPostLiked(int postId) async {
     final db = await database;
     final result = await db.query(
@@ -63,7 +135,6 @@ class DatabaseHelper {
     return false;
   }
 
-  // Obtiene los comentarios de un post
   Future<List<Map<String, dynamic>>> getComments(int postId) async {
     final db = await database;
     return db.query(
@@ -73,12 +144,34 @@ class DatabaseHelper {
     );
   }
 
-  // Inserta un comentario en un post
   Future<void> insertComment(int postId, String content) async {
     final db = await database;
     await db.insert(
       'comments',
       {'postId': postId, 'content': content},
     );
+  }
+
+  Future<String> register(
+      String name, String email, String username, String password) async {
+    try {
+      final userExists = await checkUserExists(email, username);
+
+      if (userExists) {
+        return "El correo electrónico o el nombre de usuario ya están en uso.";
+      }
+
+      await insertUser({
+        'name': name,
+        'email': email,
+        'username': username,
+        'password': password
+      });
+
+      return "Registro exitoso";
+    } catch (e) {
+      print("Error al registrar usuario: $e");
+      return "Ocurrió un error durante el registro.";
+    }
   }
 }
