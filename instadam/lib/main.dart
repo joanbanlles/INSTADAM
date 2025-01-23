@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:instadam/home.dart';
-import 'package:instadam/profile.dart';
-import 'package:instadam/login.dart';
-import 'package:instadam/settings.dart';
-import 'barra_navegacion.dart';
+import 'home.dart';
+import 'login.dart';
+import 'profile.dart';
+import 'settings.dart';
+import 'newpost.dart';
+import 'signup.dart';
+import 'DatabaseHelper.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseHelper().initDatabase();
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Instadam',
+      debugShowCheckedModeBanner: false,
+      title: 'App de Ejemplo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(), // Cambia la pantalla inicial a LoginScreen
+      initialRoute: '/signup',
       routes: {
-        '/home': (context) => const HomeScreen(),
-        '/profile': (context) => const ProfileScreen(),
-        '/settings': (context) => const Settings(),
-        '/barranavegacio': (context) => const BarraNavegacion(),
+        '/signup': (context) => SignUp(),
+        '/login': (context) => Login(),
+        '/home': (context) => MainScreen(),
+        '/profile': (context) => Profile(),
+        '/settings': (context) => Settings(),
+        '/newpost': (context) => Newpost(),
       },
     );
   }
@@ -79,4 +88,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
- 
