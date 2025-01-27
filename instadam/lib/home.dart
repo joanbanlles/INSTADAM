@@ -184,7 +184,6 @@ class _PostItemState extends State<PostItem> {
             const SizedBox(width: 10),
             TextButton(
               onPressed: () {
-                // Navegación a la pantalla de comentarios
                 Navigator.push(
                   context,
                   MaterialPageRoute(
