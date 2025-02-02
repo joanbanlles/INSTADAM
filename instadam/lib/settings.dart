@@ -1,4 +1,3 @@
-// Importa los paquetes necesarios
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,12 +30,9 @@ class _SettingsState extends State<Settings> {
     prefs.setString('accountName', _accountName);
   }
 
-
   void _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); 
-
-
+    await prefs.clear();
     Navigator.of(context).pushReplacementNamed('/login');
   }
 
@@ -45,41 +41,63 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 1,
+        elevation: 2,
         title: const Text(
           'Configuración',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.brown),
       ),
-      body: ListView(
-        children: <Widget>[
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.person_outline, color: Colors.black),
-            title: const Text('Cuenta'),
-            onTap: () {},
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Color(0xFFFFE0B2)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          SwitchListTile(
-            title: const Text('Guardar datos de inicio de sesión'),
-            value: _saveLoginData,
-            onChanged: (bool value) {
-              setState(() {
-                _saveLoginData = value;
-              });
-              _saveAccountData();
-            },
-            secondary: const Icon(Icons.save, color: Colors.black),
-          ),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.black),
-            title: const Text('Cerrar sesión'),
-            onTap: () {
-              _logout();
-            },
-          ),
-        ],
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(12.0),
+          children: <Widget>[
+            Card(
+              color: Color(0xFFFFF3E0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              child: ListTile(
+                leading: const Icon(Icons.person_outline, color: Colors.brown),
+                title: Text('Cuenta', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.brown.shade900)),
+                onTap: () {},
+              ),
+            ),
+            Card(
+              color: Color(0xFFFFF3E0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              child: SwitchListTile(
+                title: Text('Guardar datos de inicio de sesión', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.brown.shade900)),
+                value: _saveLoginData,
+                onChanged: (bool value) {
+                  setState(() {
+                    _saveLoginData = value;
+                  });
+                  _saveAccountData();
+                },
+                secondary: const Icon(Icons.save, color: Colors.brown),
+              ),
+            ),
+            Card(
+              color: Color(0xFFFFF3E0),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              child: ListTile(
+                leading: const Icon(Icons.logout, color: Colors.redAccent),
+                title: const Text('Cerrar sesión', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.redAccent)),
+                onTap: () {
+                  _logout();
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+

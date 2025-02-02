@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instadam/comments.dart';
 import 'DatabaseHelper.dart';
+import 'dart:io';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -82,16 +84,16 @@ class PostSection extends StatelessWidget {
         PostItem(
           postId: 1,
           username: 'gerard_farre',
-          location: 'casa elodia',
+          location: 'El campo',
           userImage: 'assets/images.png',
-          postImage: 'assets/descarga.jpg',
+          postImage: 'assets/paisaje1.jpg',
         ),
         PostItem(
           postId: 2,
           username: 'orlando_212',
-          location: 'Madrid',
+          location: 'El lago',
           userImage: 'assets/images.png',
-          postImage: 'assets/descarga.jpg',
+          postImage: 'assets/paisaje2.jpg',
         ),
       ],
     );
@@ -122,6 +124,7 @@ class _PostItemState extends State<PostItem> {
   List<Map<String, dynamic>> comments = [];
   bool isLiked = false;
   final DatabaseHelper _databaseHelper = DatabaseHelper();
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -156,46 +159,66 @@ class _PostItemState extends State<PostItem> {
     await _databaseHelper.insertLike(widget.postId, isLiked);
   }
 
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage(widget.userImage),
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage(widget.userImage),
+            ),
+            title: Text(widget.username),
+            subtitle: Text(widget.location),
+            trailing: const Icon(Icons.more_vert),
           ),
-          title: Text(widget.username),
-          subtitle: Text(widget.location),
-          trailing: const Icon(Icons.more_vert),
-        ),
-        Center(
-          child: Image.asset(widget.postImage),
-        ),
-        Row(
-          children: [
-            IconButton(
-              icon: Icon(
-                isLiked ? Icons.favorite : Icons.favorite_border,
-                color: isLiked ? Colors.red : Colors.black,
+          GestureDetector(
+            onTap: pickImage,
+            child: _selectedImage == null
+                ? Image.asset(widget.postImage, fit: BoxFit.cover)
+                : Image.file(_selectedImage!, fit: BoxFit.cover),
+          ),
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  isLiked ? Icons.favorite : Icons.favorite_border,
+                  color: isLiked ? Colors.red : Colors.black,
+                ),
+                onPressed: toggleLike,
               ),
-              onPressed: toggleLike,
-            ),
-            const SizedBox(width: 10),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CommentsScreen(postId: widget.postId),
-                  ),
-                );
-              },
-              child: const Text('View Comments'),
-            ),
-          ],
-        ),
-      ],
+              const SizedBox(width: 10),
+              TextButton(
+                style: TextButton.styleFrom(foregroundColor: Colors.blue),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CommentsScreen(postId: widget.postId),
+                    ),
+                  );
+                },
+                child: const Text('View Comments'),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
+
