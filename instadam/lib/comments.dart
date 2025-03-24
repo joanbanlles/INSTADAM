@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'DatabaseHelper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importamos Firebase Firestore
 
 class CommentsScreen extends StatefulWidget {
-  final int postId;
+  final String postId; // Asegúrate de que postId sea un String como se usa en Firestore
 
   const CommentsScreen({super.key, required this.postId});
 
@@ -11,34 +11,39 @@ class CommentsScreen extends StatefulWidget {
 }
 
 class _CommentsScreenState extends State<CommentsScreen> {
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
-  List<Map<String, dynamic>> comments = [];
   final TextEditingController _commentController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    fetchComments();
-  }
-
-  Future<void> fetchComments() async {
-    final data = await _databaseHelper.getComments(widget.postId);
-    setState(() {
-      comments = data;
+  // Función para agregar comentario a Firestore
+  void addComment(String content) {
+    FirebaseFirestore.instance
+        .collection('comments') // Colección principal
+        .doc(widget.postId) // Documento que representa el post (con el ID del post)
+        .collection('comments') // Subcolección de comentarios
+        .add({
+      'comment': content,
+      'timestamp': FieldValue.serverTimestamp(), // Agregamos una marca de tiempo
     });
+    _commentController.clear(); // Limpiamos el campo de texto después de agregar el comentario
   }
 
-  Future<void> addComment(String content) async {
-    await _databaseHelper.insertComment(widget.postId, content);
-    _commentController.clear();
-    fetchComments();
+  // Función para eliminar un comentario de Firestore
+  void deleteComment(String commentId) {
+    FirebaseFirestore.instance
+        .collection('comments') // Colección principal
+        .doc(widget.postId) // Documento que representa el post (con el ID del post)
+        .collection('comments') // Subcolección de comentarios
+        .doc(commentId) // Documento específico del comentario
+        .delete(); // Eliminamos el comentario
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Comments', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown)),
+        title: const Text(
+          'Comments',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown),
+        ),
         backgroundColor: Colors.white,
         elevation: 2,
         iconTheme: const IconThemeData(color: Colors.brown),
@@ -53,31 +58,84 @@ class _CommentsScreenState extends State<CommentsScreen> {
         ),
         child: Column(
           children: [
+            // Mostrar los comentarios en tiempo real desde Firestore
             Expanded(
-              child: comments.isEmpty
-                  ? const Center(
-                child: Text(
-                  'No comments yet. Be the first!',
-                  style: TextStyle(color: Colors.brown, fontSize: 16),
-                ),
-              )
-                  : ListView.builder(
-                itemCount: comments.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    color: Color(0xFFFFF3E0),
-                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    child: ListTile(
-                      title: Text(
-                        comments[index]['content'],
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.brown),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('comments') // Colección principal
+                    .doc(widget.postId) // Documento que representa el post
+                    .collection('comments') // Subcolección de comentarios
+                    .orderBy('timestamp', descending: true)
+                    .snapshots(), // Obtenemos los comentarios en tiempo real
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final comments = snapshot.data!.docs;
+                  if (comments.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No comments yet. Be the first!',
+                        style: TextStyle(color: Colors.brown, fontSize: 16),
                       ),
-                      leading: const Icon(Icons.comment, color: Colors.brown),
-                    ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: comments.length,
+                    itemBuilder: (context, index) {
+                      final commentData = comments[index].data() as Map<String, dynamic>;
+                      final commentContent = commentData['comment'] ?? '';
+                      final commentId = comments[index].id; // Obtenemos el ID del comentario
+
+                      return Card(
+                        color: const Color(0xFFFFF3E0),
+                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        child: ListTile(
+                          title: Text(
+                            commentContent,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.brown,
+                            ),
+                          ),
+                          leading: const Icon(Icons.comment, color: Colors.brown),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              // Confirmación antes de eliminar
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Delete Comment'),
+                                  content: const Text('Are you sure you want to delete this comment?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        deleteComment(commentId); // Eliminamos el comentario de Firestore
+                                        Navigator.of(context).pop(); // Cerramos el diálogo
+                                      },
+                                      child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
             ),
+            // Campo para agregar un nuevo comentario
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Row(
@@ -108,7 +166,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                         onTap: () {
                           final content = _commentController.text.trim();
                           if (content.isNotEmpty) {
-                            addComment(content);
+                            addComment(content); // Guardamos el comentario en Firebase
                           }
                         },
                         child: const Padding(

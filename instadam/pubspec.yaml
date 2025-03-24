@@ -11,11 +11,20 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Iconos de Cupertino
   cupertino_icons: ^1.0.8
-  shared_preferences: ^2.0.15
+
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.17.9
+  cloud_firestore: ^4.17.5
+
+  # Manejo de imágenes desde la galería/cámara
   image_picker: ^1.1.2
-  sqflite: ^2.0.0+4
-  path: ^1.8.3
+
+  # Almacenamiento local de preferencias del usuario
+  shared_preferences: ^2.0.15
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:
@@ -27,4 +36,4 @@ flutter:
 
   assets:
     - assets/images/logo.png
-    - assets/
+    - assets/images/

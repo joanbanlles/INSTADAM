@@ -1,260 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:instadam/home.dart'; // Asegúrate de tener esta importación
 
-void main() {
-  runApp(Newpost());
-}
-
-class Newpost extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Evento Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-        fontFamily: 'Roboto',
-      ),
-      home: NewPostScreen(),
-    );
-  }
-}
-
-class NewPostScreen extends StatefulWidget {
+class Newpost extends StatefulWidget {
   @override
   _NewPostScreenState createState() => _NewPostScreenState();
 }
 
-class _NewPostScreenState extends State<NewPostScreen> {
-  final List<String> imagePaths = [
-    'assets/images11.jpg',
-    'assets/images12.jpg',
-    'assets/images13.jpg',
-    'assets/images14.jpg',
-    'assets/foto15.webp',
-    'assets/images16.webp',
-    'assets/images17.jpg',
-    'assets/images18.jpg',
-    'assets/images19.jpg',
-  ];
-
-  List<File> capturedImages = [];
+class _NewPostScreenState extends State<Newpost> {
   final ImagePicker _picker = ImagePicker();
-  String? selectedImage; 
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCapturedImages();
-    selectedImage = 'assets/descarga.jpg'; 
-  }
-
-  Future<void> _saveCapturedImages() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> paths = capturedImages.map((file) => file.path).toList();
-    await prefs.setStringList('capturedImages', paths);
-  }
-
-  Future<void> _loadCapturedImages() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String>? paths = prefs.getStringList('capturedImages');
-    if (paths != null) {
-      setState(() {
-        capturedImages = paths.map((path) => File(path)).toList();
-      });
-    }
-  }
-
-  Future<void> _takePhoto() async {
-    try {
-      final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-      if (photo != null) {
-        setState(() {
-          capturedImages.add(File(photo.path));
-          selectedImage = photo.path; 
-        });
-        await _saveCapturedImages();
-      }
-    } catch (e) {
-      print("Error al tomar la foto: $e");
-    }
-  }
+  File? _selectedImage;
 
   Future<void> _pickImageFromGallery() async {
     try {
       final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
       if (photo != null) {
         setState(() {
-          capturedImages.add(File(photo.path));
-          selectedImage = photo.path; 
+          _selectedImage = File(photo.path);
         });
-        await _saveCapturedImages();
       }
     } catch (e) {
       print("Error al seleccionar la foto: $e");
     }
   }
 
-  void _deleteSelectedImage() {
-    if (selectedImage == null) return;
-    setState(() {
-     
-      capturedImages.removeWhere((file) => file.path == selectedImage);
-      selectedImage = null;
-    });
-    _saveCapturedImages();
+  void _createPost(BuildContext context) async {
+    if (_selectedImage != null) {
+      // Aquí se simula subir la imagen a Firebase y obtener una URL (puedes implementarlo si lo necesitas)
+      String imageUrl = await _uploadImageToStorage();
+
+      // Guardar post en Firestore
+      FirebaseFirestore.instance.collection('posts').add({
+        'username': 'gerard_farre',
+        'location': 'El campo',
+        'userImage': 'assets/images/user1.jpg',  // Imagen de perfil del usuario
+        'postImage': imageUrl,
+      });
+
+      // Navegar a la pantalla de inicio donde se visualizarán los posts
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Home()),  // Redirige a la pantalla de inicio
+      );
+    }
+  }
+
+  Future<String> _uploadImageToStorage() async {
+    // Aquí se implementaría el código para subir la imagen a Firebase Storage y obtener la URL.
+    // Por simplicidad, devolvemos una URL estática
+    return 'https://firebasestorage.googleapis.com/v0/b/your-app.appspot.com/o/images%2Fpost_image.jpg?alt=media';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Nueva Publicación',
-          style: TextStyle(
-            color: Colors.blueGrey[800],
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: const Text('Nueva Publicación'),
         actions: [
           TextButton(
-            onPressed: () {},
-            child: Text(
-              'Siguiente',
-              style: TextStyle(color: Colors.blueGrey[800], fontWeight: FontWeight.w600),
-            ),
+            onPressed: () => _createPost(context),
+            child: const Text('Siguiente'),
           ),
         ],
-        backgroundColor: Colors.white,
-        elevation: 2,
-        iconTheme: IconThemeData(color: Colors.blueGrey[800]),
       ),
-      backgroundColor: Colors.blueGrey[50],
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-
             Container(
               height: 200,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-                image: selectedImage != null
+                image: _selectedImage != null
                     ? DecorationImage(
-                  image: selectedImage!.startsWith('assets/')
-                      ? AssetImage(selectedImage!) as ImageProvider
-                      : FileImage(File(selectedImage!)),
+                  image: FileImage(_selectedImage!),
                   fit: BoxFit.cover,
                 )
                     : null,
               ),
             ),
             SizedBox(height: 20),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                'Galería de Imágenes',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.blueGrey[800],
-                ),
-              ),
-            ),
-            SizedBox(height: 12),
-
-            Expanded(
-              child: GridView.builder(
-                padding: EdgeInsets.all(4.0),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 6.0,
-                  mainAxisSpacing: 6.0,
-                ),
-                itemCount: imagePaths.length + capturedImages.length,
-                itemBuilder: (context, index) {
-                  if (index < imagePaths.length) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImage = imagePaths[index]; 
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.4),
-                              blurRadius: 3,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                          image: DecorationImage(
-                            image: AssetImage(imagePaths[index]),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    final capturedIndex = index - imagePaths.length;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImage = capturedImages[capturedIndex].path; 
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          image: DecorationImage(
-                            image: FileImage(capturedImages[capturedIndex]),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
+            ElevatedButton(
+              onPressed: _pickImageFromGallery,
+              child: const Text('Seleccionar Imagen'),
             ),
           ],
         ),
-      ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: _pickImageFromGallery,
-            child: Icon(Icons.image),
-            backgroundColor: Colors.blueGrey,
-          ),
-          SizedBox(width: 10),
-          FloatingActionButton(
-            onPressed: _takePhoto,
-            child: Icon(Icons.camera_alt),
-            backgroundColor: Colors.blueGrey,
-          ),
-          SizedBox(width: 10),
-          FloatingActionButton(
-            onPressed: _deleteSelectedImage,
-            child: Icon(Icons.delete),
-            backgroundColor: Colors.redAccent,
-          ),
-        ],
       ),
     );
   }

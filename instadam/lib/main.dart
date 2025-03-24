@@ -1,16 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'home.dart';
 import 'login.dart';
 import 'profile.dart';
 import 'settings.dart';
 import 'newpost.dart';
 import 'signup.dart';
-import 'DatabaseHelper.dart';
 
 void main() async {
-  runApp(const MyApp());
   WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseHelper().initDatabase();
+  await Firebase.initializeApp(); // Inicializa Firebase
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/signup',
+      initialRoute: FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
       routes: {
         '/signup': (context) => SignUp(),
         '/login': (context) => Login(),
@@ -55,6 +56,18 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Main Screen'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.exit_to_app),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+        ],
+      ),
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
