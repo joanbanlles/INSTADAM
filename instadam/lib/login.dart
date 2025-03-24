@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importar FirebaseAuth
 import 'package:shared_preferences/shared_preferences.dart';
-import 'DatabaseHelper.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -13,7 +13,6 @@ class _LoginScreenState extends State<Login> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _rememberMe = false;
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   @override
   void initState() {
@@ -59,17 +58,16 @@ class _LoginScreenState extends State<Login> {
     }
 
     try {
-      final user = await _databaseHelper.getUser(username, password);
+      // Autenticación en Firebase
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: username, password: password);
 
-      if (user != null && user.isNotEmpty) {
-        await _saveCredentials();
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        _showErrorDialog('Usuario o contraseña incorrectos');
-      }
-    } catch (e) {
-      print("Error durante el inicio de sesión: $e");
-      _showErrorDialog('Ocurrió un error al iniciar sesión');
+      // Si el login es exitoso
+      await _saveCredentials();
+      Navigator.pushReplacementNamed(context, '/home');
+    } on FirebaseAuthException catch (e) {
+      // Si ocurre un error
+      _showErrorDialog('Usuario o contraseña incorrectos');
     }
   }
 
@@ -77,12 +75,12 @@ class _LoginScreenState extends State<Login> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Error'),
+        title: const Text('Error'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -101,23 +99,23 @@ class _LoginScreenState extends State<Login> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset('assets/images/logo.png', height: 100),
-                SizedBox(height: 20),
-                Text(
-                  '¡Conecta, crea y deja huella !',
+                const SizedBox(height: 20),
+                const Text(
+                  '¡Conecta, crea y deja huella!',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
                   'Inicia sesión',
                   style: TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildRoundedTextField(
-                    _usernameController, 'Nombre de usuario'),
-                SizedBox(height: 10),
+                    _usernameController, 'Correo Electrónico'),
+                const SizedBox(height: 10),
                 _buildRoundedTextField(_passwordController, 'Contraseña',
                     obscureText: true),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -129,7 +127,7 @@ class _LoginScreenState extends State<Login> {
                         });
                       },
                     ),
-                    Text('Recordar credenciales'),
+                    const Text('Recordar credenciales'),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -147,23 +145,23 @@ class _LoginScreenState extends State<Login> {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   'OR',
                   style: TextStyle(color: Colors.grey),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacementNamed(context, '/signup');
                   },
                   style: TextButton.styleFrom(
-                    minimumSize: Size(double.infinity, 50),
+                    minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Registrarse',
                     style: TextStyle(color: Colors.black),
                   ),

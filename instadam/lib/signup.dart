@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'DatabaseHelper.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importar FirebaseAuth
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
-
-  static List<Map<String, String>> users = [];
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -15,9 +13,8 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
-  void _register() async {
+  Future<void> _register() async {
     final name = _nameController.text;
     final email = _emailController.text;
     final username = _usernameController.text;
@@ -28,36 +25,37 @@ class _SignUpState extends State<SignUp> {
       return;
     }
 
-    final userExists = await _databaseHelper.checkUserExists(email, username);
-    if (userExists) {
-      _showErrorDialog(
-          'El correo electrónico o el nombre de usuario ya están en uso.');
-      return;
+    try {
+      // Registro con Firebase Authentication
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      // Si el registro es exitoso, puedes guardar el nombre y otros datos si lo deseas
+      // Por ejemplo, puedes actualizar el nombre de usuario en Firebase Firestore
+      User? user = userCredential.user;
+      await user?.updateDisplayName(name);  // Actualiza el nombre del usuario
+
+      // Muestra un mensaje de éxito
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Registro Exitoso'),
+          content: Text('¡Tu cuenta ha sido creada exitosamente!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      // Si hay un error al registrar el usuario (por ejemplo, si el correo ya existe)
+      _showErrorDialog(e.message ?? 'Error desconocido');
     }
-
-    await _databaseHelper.insertUser({
-      'name': name,
-      'email': email,
-      'username': username,
-      'password': password,
-    });
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Registro Exitoso'),
-        content: Text('¡Tu cuenta ha sido creada exitosamente!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-            child: Text('OK'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showErrorDialog(String message) {
@@ -90,7 +88,7 @@ class _SignUpState extends State<SignUp> {
                 const SizedBox(height: 20),
                 Image.asset('assets/images/logo.png', height: 100),
                 const Text(
-                  '¡Conecta, crea y deja huella !',
+                  '¡Conecta, crea y deja huella!',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
@@ -111,8 +109,7 @@ class _SignUpState extends State<SignUp> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    _register();
-                    Navigator.pushReplacementNamed(context, '/login');
+                    await _register();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,
@@ -144,7 +141,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                   child: Text(
                     'Iniciar Sesión',
-                    style: TextStyle(color: Colors.black), // Texto en negro
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
               ],
