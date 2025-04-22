@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -31,9 +32,22 @@ class _SettingsState extends State<Settings> {
   }
 
   void _logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    Navigator.of(context).pushReplacementNamed('/login');
+    try {
+      // Cierra sesión en Firebase
+      await FirebaseAuth.instance.signOut();
+
+      // Limpia los datos almacenados localmente
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
+      // Redirige al usuario a la pantalla de inicio de sesión
+      Navigator.of(context).pushReplacementNamed('/login');
+    } catch (e) {
+      // Manejo de errores
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cerrar sesión: $e')),
+      );
+    }
   }
 
   @override
@@ -61,18 +75,26 @@ class _SettingsState extends State<Settings> {
           children: <Widget>[
             Card(
               color: Color(0xFFFFF3E0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
               child: ListTile(
                 leading: const Icon(Icons.person_outline, color: Colors.brown),
-                title: Text('Cuenta', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.brown.shade900)),
+                title: Text('Cuenta',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.brown.shade900)),
                 onTap: () {},
               ),
             ),
             Card(
               color: Color(0xFFFFF3E0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
               child: SwitchListTile(
-                title: Text('Guardar datos de inicio de sesión', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.brown.shade900)),
+                title: Text('Guardar datos de inicio de sesión',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.brown.shade900)),
                 value: _saveLoginData,
                 onChanged: (bool value) {
                   setState(() {
@@ -85,10 +107,13 @@ class _SettingsState extends State<Settings> {
             ),
             Card(
               color: Color(0xFFFFF3E0),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
               child: ListTile(
                 leading: const Icon(Icons.logout, color: Colors.redAccent),
-                title: const Text('Cerrar sesión', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.redAccent)),
+                title: const Text('Cerrar sesión',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500, color: Colors.redAccent)),
                 onTap: () {
                   _logout();
                 },
@@ -100,4 +125,3 @@ class _SettingsState extends State<Settings> {
     );
   }
 }
-

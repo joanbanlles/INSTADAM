@@ -17,6 +17,7 @@ dependencies:
   # Firebase
   firebase_core: ^2.24.2
   firebase_auth: ^4.17.9
+  firebase_storage: ^11.4.0
   cloud_firestore: ^4.17.5
 
   # Manejo de imágenes desde la galería/cámara

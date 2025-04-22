@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:instadam/comments.dart'; // Asegúrate de tener la pantalla de comentarios
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,86 +43,104 @@ class InstadamBody extends StatelessWidget {
 class StoriesSection extends StatelessWidget {
   const StoriesSection({super.key});
 
-  final List<String> userNames = const [
-    'juanillo05',
-    'orlando_212',
-    'gerard_farre',
-    'alejandro_drope',
-    'carlitos_123',
-  ];
-
-  final List<List<String>> userStories = const [
-    ['assets/images/story1_juanillo.webp', 'assets/images/story2_juanillo.jpg', 'assets/images/story3_juanillo.avif'],
-    ['assets/images/story1_orlando.jpg', 'assets/images/story2_orlando.jpg'],
-    ['assets/images/story1_gerard.jpg', 'assets/images/story2_gerard.avif'],
-    ['assets/images/story1_alejandro.jpg', 'assets/images/story2_alejandro.jpg'],
-    ['assets/images/story1_carlitos.jpg', 'assets/images/story2_carlitos.avif'],
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 180,
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: userNames.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              // Navegar a la pantalla de historias
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => StoryDetailScreen(
-                    username: userNames[index],
-                    storyImages: userStories[index],
-                    initialIndex: 0, // Comienza con la primera imagen de la historia
-                  ),
-                ),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                children: [
-                  // Imagen de perfil con borde y sombra
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 6,
-                          offset: Offset(0, 4),
+    return Column(
+      children: [
+        ElevatedButton.icon(
+          onPressed: () => _uploadStory(context),
+          icon: const Icon(Icons.add_a_photo),
+          label: const Text('Subir Historia'),
+        ),
+        Container(
+          height: 180,
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: StreamBuilder<QuerySnapshot>(
+            stream:
+                FirebaseFirestore.instance.collection('stories').snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final stories = snapshot.data!.docs;
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: stories.length,
+                itemBuilder: (context, index) {
+                  final story = stories[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StoryDetailScreen(
+                            username: story['username'],
+                            storyImages: List<String>.from(story['images']),
+                            initialIndex: 0,
+                          ),
                         ),
+                      );
+                    },
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(story['images'][0]),
+                        ),
+                        Text(story['username']),
                       ],
                     ),
-                    child: CircleAvatar(
-                      radius: 35,
-                      backgroundImage: AssetImage(userStories[index][0]),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Nombre de usuario con texto estilizado
-                  Text(
-                    userNames[index],
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+  Future<void> _uploadStory(BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource
+          .gallery, // Cambia a ImageSource.camera para usar la cámara
+    );
+
+    if (pickedFile != null) {
+      final file = File(pickedFile.path);
+      final userId = FirebaseAuth.instance.currentUser!.uid;
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      try {
+        // Subir la imagen a Firebase Storage
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('stories')
+            .child(userId)
+            .child(fileName);
+        final uploadTask = await storageRef.putFile(file);
+
+        // Obtener la URL de descarga
+        final downloadUrl = await uploadTask.ref.getDownloadURL();
+
+        // Guardar la URL en Firestore
+        await FirebaseFirestore.instance.collection('stories').add({
+          'userId': userId,
+          'username':
+              FirebaseAuth.instance.currentUser!.displayName ?? 'Usuario',
+          'images': [downloadUrl],
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Historia subida con éxito')),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al subir la historia: $e')),
+        );
+      }
+    }
   }
 }
 
@@ -154,7 +173,8 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
 
   void _loadLikeStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool liked = prefs.getBool('liked_${widget.username}_${currentIndex}') ?? false;
+    bool liked =
+        prefs.getBool('liked_${widget.username}_${currentIndex}') ?? false;
     setState(() {
       isLiked = liked;
     });
@@ -197,19 +217,31 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     ];
 
     final userStories = [
-      ['assets/images/story1_juanillo.webp', 'assets/images/story2_juanillo.jpg', 'assets/images/story3_juanillo.avif'],
+      [
+        'assets/images/story1_juanillo.webp',
+        'assets/images/story2_juanillo.jpg',
+        'assets/images/story3_juanillo.avif'
+      ],
       ['assets/images/story1_orlando.jpg', 'assets/images/story2_orlando.jpg'],
       ['assets/images/story1_gerard.jpg', 'assets/images/story2_gerard.avif'],
-      ['assets/images/story1_alejandro.jpg', 'assets/images/story2_alejandro.jpg'],
-      ['assets/images/story1_carlitos.jpg', 'assets/images/story2_carlitos.avif'],
+      [
+        'assets/images/story1_alejandro.jpg',
+        'assets/images/story2_alejandro.jpg'
+      ],
+      [
+        'assets/images/story1_carlitos.jpg',
+        'assets/images/story2_carlitos.avif'
+      ],
     ];
 
     // Obtener el índice del siguiente usuario
-    final nextIndex = (userNames.indexOf(widget.username) + 1) % userNames.length;
+    final nextIndex =
+        (userNames.indexOf(widget.username) + 1) % userNames.length;
 
     // Si no hay más usuarios, vuelve a la pantalla principal
     if (nextIndex == 0) {
-      Navigator.pop(context); // Cierra la pantalla de historia y regresa a la pantalla principal
+      Navigator.pop(
+          context); // Cierra la pantalla de historia y regresa a la pantalla principal
     } else {
       Navigator.pushReplacement(
         context,
@@ -248,7 +280,10 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 widget.username,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black45),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black45),
               ),
             ),
             // Barra de progreso para indicar la cantidad de imágenes en la historia
@@ -395,19 +430,22 @@ class _PostItemState extends State<PostItem> {
   }
 
   Future<void> _getLikeStatus() async {
-    final postRef = FirebaseFirestore.instance.collection('likes').doc(widget.postId);
+    final postRef =
+        FirebaseFirestore.instance.collection('likes').doc(widget.postId);
     final doc = await postRef.get();
 
     if (doc.exists) {
       setState(() {
-        isLiked = doc['likedBy'].contains(FirebaseAuth.instance.currentUser!.uid);
+        isLiked =
+            doc['likedBy'].contains(FirebaseAuth.instance.currentUser!.uid);
         likeCount = doc['likeCount'] ?? 0;
       });
     }
   }
 
   Future<void> _toggleLike() async {
-    final postRef = FirebaseFirestore.instance.collection('likes').doc(widget.postId);
+    final postRef =
+        FirebaseFirestore.instance.collection('likes').doc(widget.postId);
     final userId = FirebaseAuth.instance.currentUser!.uid;
 
     final doc = await postRef.get();
@@ -449,8 +487,10 @@ class _PostItemState extends State<PostItem> {
 
   // Método para eliminar el post
   Future<void> _deletePost() async {
-    final postRef = FirebaseFirestore.instance.collection('posts').doc(widget.postId);
-    final likeRef = FirebaseFirestore.instance.collection('likes').doc(widget.postId);
+    final postRef =
+        FirebaseFirestore.instance.collection('posts').doc(widget.postId);
+    final likeRef =
+        FirebaseFirestore.instance.collection('likes').doc(widget.postId);
 
     try {
       // Eliminar el post de la colección de posts
@@ -518,7 +558,9 @@ class _PostItemState extends State<PostItem> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CommentsScreen(postId: widget.postId)),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            CommentsScreen(postId: widget.postId)),
                   );
                 },
                 child: const Text('View Comments'),
