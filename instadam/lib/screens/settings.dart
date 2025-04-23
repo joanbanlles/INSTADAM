@@ -54,18 +54,18 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 2,
         title: const Text(
           'Configuración',
-          style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontWeight: FontWeight.bold),
         ),
-        iconTheme: const IconThemeData(color: Colors.brown),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.white, Color(0xFFFFE0B2)],
+            colors: [Colors.white, Color.fromARGB(255, 255, 255, 255)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -74,20 +74,20 @@ class _SettingsState extends State<Settings> {
           padding: const EdgeInsets.all(12.0),
           children: <Widget>[
             Card(
-              color: Color(0xFFFFF3E0),
+              color: Color.fromARGB(255, 255, 255, 255),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               child: ListTile(
-                leading: const Icon(Icons.person_outline, color: Colors.brown),
+                leading: const Icon(Icons.person_outline, color: Color.fromARGB(255, 0, 0, 0)),
                 title: Text('Cuenta',
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        color: Colors.brown.shade900)),
+                        color: const Color.fromARGB(255, 0, 0, 0))),
                 onTap: () {},
               ),
             ),
             Card(
-              color: Color(0xFFFFF3E0),
+              color: Color.fromARGB(255, 255, 255, 255),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               child: SwitchListTile(
@@ -106,7 +106,7 @@ class _SettingsState extends State<Settings> {
               ),
             ),
             Card(
-              color: Color(0xFFFFF3E0),
+              color: Color.fromARGB(255, 255, 255, 255),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               child: ListTile(

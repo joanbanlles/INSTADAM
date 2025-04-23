@@ -4,7 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'dart:async'; // Importa el paquete Timer
+import 'dart:async';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -83,30 +84,33 @@ class _ProfileScreenState extends State<Profile> {
   }
 
   /// Seleccionar imagen y guardarla localmente
-  Future<void> _changeProfileImage() async {
-    final XFile? pickedFile =
-    await _picker.pickImage(source: ImageSource.gallery);
+Future<void> _changeProfileImage() async {
+  final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      File newImage = File(pickedFile.path);
-      User? user = _auth.currentUser;
+  if (pickedFile != null) {
+    File newImage = File(pickedFile.path);
+    User? user = _auth.currentUser;
 
-      if (user != null) {
-        // Guardar la imagen localmente
-        String localPath = await _saveImageLocally(newImage);
+    if (user != null) {
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child('${user.uid}.jpg');
+      await ref.putFile(newImage);
+      final downloadUrl = await ref.getDownloadURL();
 
-        setState(() {
-          _image = newImage;
-          _userImage = localPath;
-        });
+      await _firestore.collection('usuarios').doc(user.uid).update({
+        'imageUrl': downloadUrl,
+      });
 
-        // Guardar la ruta en Firestore
-        await _firestore.collection('usuarios').doc(user.uid).update({
-          'imageUrl': localPath,
-        });
-      }
+      setState(() {
+        _userImage = downloadUrl;
+        _image = null; // Usamos imagen de red ahora
+      });
     }
   }
+}
+
 
   /// Guardar la imagen localmente
   Future<String> _saveImageLocally(File imageFile) async {
@@ -246,23 +250,43 @@ class _ProfileScreenState extends State<Profile> {
           ),
           const SizedBox(height: 10),
           const Divider(),
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(8),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 4,
-                mainAxisSpacing: 4,
+Expanded(
+  child: StreamBuilder<QuerySnapshot>(
+    stream: _firestore
+        .collection('posts')
+        .where('username', isEqualTo: _userName)
+        .orderBy('timestamp', descending: true)
+        .snapshots(),
+    builder: (context, snapshot) {
+      if (!snapshot.hasData) {
+        return Center(child: CircularProgressIndicator());
+      }
+      final posts = snapshot.data!.docs;
+      return GridView.builder(
+        padding: const EdgeInsets.all(8),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+        ),
+        itemCount: posts.length,
+        itemBuilder: (context, index) {
+          final postImage = posts[index]['postImage'];
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(postImage),
+                fit: BoxFit.cover,
               ),
-              itemCount: 9,
-              itemBuilder: (context, index) {
-                return Container(
-                  color: Colors.grey[300],
-                  child: const Center(child: Icon(Icons.image, size: 50)),
-                );
-              },
+              borderRadius: BorderRadius.circular(8),
             ),
-          ),
+          );
+        },
+      );
+    },
+  ),
+),
+
         ],
       ),
     );

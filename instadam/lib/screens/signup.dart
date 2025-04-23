@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Importar FirebaseAuth
+import 'package:firebase_auth/firebase_auth.dart'; 
+import 'package:instadam/auth/auth_service.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -33,7 +34,9 @@ class _SignUpState extends State<SignUp> {
       // Si el registro es exitoso, puedes guardar el nombre y otros datos si lo deseas
       // Por ejemplo, puedes actualizar el nombre de usuario en Firebase Firestore
       User? user = userCredential.user;
-      await user?.updateDisplayName(name);  // Actualiza el nombre del usuario
+      await user?.updateDisplayName(name);
+      await saveUserToFirestore(user!);
+  // Actualiza el nombre del usuario
 
       // Muestra un mensaje de éxito
       showDialog(
