@@ -28,29 +28,23 @@ class _NewPostScreenState extends State<Newpost> {
 
   void _createPost(BuildContext context) async {
     if (_selectedImage != null) {
-      // Aquí se simula subir la imagen a Firebase y obtener una URL (puedes implementarlo si lo necesitas)
-      String imageUrl = await _uploadImageToStorage();
+      try {
+        // Crear el post en Firestore
+        await FirebaseFirestore.instance.collection('posts').add({
+          'username': 'gerard_farre', // Esto debería venir del usuario actual
+          'location': 'El campo',
+          'userImage': 'assets/images/user1.jpg',
+          'postImage':
+              'assets/images/post1.jpg', // Aquí deberías subir la imagen real
+          'timestamp': FieldValue.serverTimestamp(),
+        });
 
-      // Guardar post en Firestore
-      FirebaseFirestore.instance.collection('posts').add({
-        'username': 'gerard_farre',
-        'location': 'El campo',
-        'userImage': 'assets/images/user1.jpg',  // Imagen de perfil del usuario
-        'postImage': imageUrl,
-      });
-
-      // Navegar a la pantalla de inicio donde se visualizarán los posts
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Home()),  // Redirige a la pantalla de inicio
-      );
+        // Navegar a la pantalla de inicio
+        Navigator.pushReplacementNamed(context, '/home');
+      } catch (e) {
+        print("Error al crear el post: $e");
+      }
     }
-  }
-
-  Future<String> _uploadImageToStorage() async {
-    // Aquí se implementaría el código para subir la imagen a Firebase Storage y obtener la URL.
-    // Por simplicidad, devolvemos una URL estática
-    return 'https://firebasestorage.googleapis.com/v0/b/your-app.appspot.com/o/images%2Fpost_image.jpg?alt=media';
   }
 
   @override
@@ -75,9 +69,9 @@ class _NewPostScreenState extends State<Newpost> {
                 borderRadius: BorderRadius.circular(16),
                 image: _selectedImage != null
                     ? DecorationImage(
-                  image: FileImage(_selectedImage!),
-                  fit: BoxFit.cover,
-                )
+                        image: FileImage(_selectedImage!),
+                        fit: BoxFit.cover,
+                      )
                     : null,
               ),
             ),

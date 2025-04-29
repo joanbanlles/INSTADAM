@@ -25,7 +25,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
+      initialRoute:
+          FirebaseAuth.instance.currentUser == null ? '/login' : '/home',
       routes: {
         '/signup': (context) => SignUp(),
         '/login': (context) => Login(),
