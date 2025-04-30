@@ -45,7 +45,7 @@ class _ProfileScreenState extends State<Profile> {
     User? user = _auth.currentUser;
     if (user != null) {
       DocumentSnapshot userDoc =
-          await _firestore.collection('usuario').doc(user.uid).get();
+          await _firestore.collection('usuarios').doc(user.uid).get();
 
       if (userDoc.exists) {
         setState(() {
@@ -56,12 +56,12 @@ class _ProfileScreenState extends State<Profile> {
           following = userDoc['following'] ?? 0;
         });
 
+        // Si hay una imagen guardada, cargarla desde el almacenamiento local
         if (_userImage.isNotEmpty) {
           _loadImageFromLocal(_userImage);
         }
       } else {
-        // Crear documento si no existe
-        await _firestore.collection('usuario').doc(user.uid).set({
+        await _firestore.collection('usuarios').doc(user.uid).set({
           'nombre': _userName,
           'imageUrl': '',
           'posts': 0,
@@ -88,57 +88,32 @@ class _ProfileScreenState extends State<Profile> {
         await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      try {
-        File newImage = File(pickedFile.path);
-        User? user = _auth.currentUser;
+      File newImage = File(pickedFile.path);
+      User? user = _auth.currentUser;
 
-        if (user != null) {
-          // Guardar la imagen permanentemente
-          String localPath = await _saveImageLocally(newImage);
-          print('Imagen guardada en: $localPath'); // Debug log
+      if (user != null) {
+        // Guardar la imagen localmente
+        String localPath = await _saveImageLocally(newImage);
 
-          // Actualizar Firestore con la nueva ruta
-          await _firestore.collection('usuario').doc(user.uid).update({
-            'imageUrl': localPath,
-          });
+        setState(() {
+          _image = newImage;
+          _userImage = localPath;
+        });
 
-          // Actualizar el estado local
-          setState(() {
-            _image = newImage;
-            _userImage = localPath;
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Foto de perfil actualizada')),
-          );
-        }
-      } catch (e) {
-        print('Error guardando la imagen: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Error al actualizar la foto de perfil')),
-        );
+        // Guardar la ruta en Firestore
+        await _firestore.collection('usuarios').doc(user.uid).update({
+          'imageUrl': localPath,
+        });
       }
     }
   }
 
   /// Guardar la imagen localmente
   Future<String> _saveImageLocally(File imageFile) async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final String fileName =
-          'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final String newPath = '${directory.path}/$fileName';
-
-      // Copiar la imagen al directorio permanente
-      final File newImage = await imageFile.copy(newPath);
-      print('Nueva imagen guardada en: ${newImage.path}'); // Debug log
-
-      return newPath;
-    } catch (e) {
-      print('Error en _saveImageLocally: $e');
-      throw Exception('No se pudo guardar la imagen');
-    }
+    final directory = await getApplicationDocumentsDirectory();
+    final String newPath = '${directory.path}/profile.jpg';
+    await imageFile.copy(newPath);
+    return newPath;
   }
 
   // Método para eliminar la cuenta
@@ -195,7 +170,7 @@ class _ProfileScreenState extends State<Profile> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: StreamBuilder<DocumentSnapshot>(
-          stream: _firestore.collection('usuario').doc(user?.uid).snapshots(),
+          stream: _firestore.collection('usuarios').doc(user?.uid).snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Text("Cargando...",
@@ -205,13 +180,30 @@ class _ProfileScreenState extends State<Profile> {
               return const Text("Usuario",
                   style: TextStyle(color: Colors.black));
             }
-            String userName = snapshot.data!.get('nombre') ?? 'Usuario';
+            String userName = snapshot.data!['nombre'] ?? 'Usuario';
             return Text(userName, style: const TextStyle(color: Colors.black));
           },
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'delete') {
+                _deleteAccount();
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Text('Borrar Cuenta'),
+                ),
+              ];
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -223,23 +215,12 @@ class _ProfileScreenState extends State<Profile> {
                   onTap: _changeProfileImage,
                   child: CircleAvatar(
                     radius: 40,
+                    backgroundImage: _image != null
+                        ? FileImage(_image!)
+                        : _userImage.isNotEmpty
+                            ? FileImage(File(_userImage))
+                            : null,
                     backgroundColor: Colors.grey[300],
-                    child: _image != null || _userImage.isNotEmpty
-                        ? ClipOval(
-                            child: Image(
-                              image: _image != null
-                                  ? FileImage(_image!)
-                                  : FileImage(File(_userImage)),
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                print('Error loading profile image: $error');
-                                return const Icon(Icons.person, size: 40);
-                              },
-                            ),
-                          )
-                        : const Icon(Icons.person, size: 40),
                   ),
                 ),
                 const SizedBox(width: 20),
@@ -334,37 +315,15 @@ class _ProfileScreenState extends State<Profile> {
                 if (newName.isNotEmpty && newName != _userName) {
                   User? user = _auth.currentUser;
                   if (user != null) {
-                    try {
-                      // Actualizar en Firestore
-                      await _firestore
-                          .collection('usuario')
-                          .doc(user.uid)
-                          .update({
-                        'nombre': newName,
-                      });
-
-                      // Actualizar el estado local
-                      setState(() {
-                        _userName = newName;
-                      });
-
-                      // Mostrar mensaje de éxito
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content:
-                                  Text('Nombre actualizado correctamente')),
-                        );
-                      }
-                    } catch (e) {
-                      print('Error actualizando nombre: $e');
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Error al actualizar el nombre')),
-                        );
-                      }
-                    }
+                    await _firestore
+                        .collection('usuarios')
+                        .doc(user.uid)
+                        .update({
+                      'nombre': newName,
+                    });
+                    setState(() {
+                      _userName = newName;
+                    });
                   }
                 }
                 Navigator.of(context).pop();

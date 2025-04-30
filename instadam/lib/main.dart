@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'App de Ejemplo',
+      title: 'Instadam',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -58,7 +58,6 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main Screen'),
         actions: [
           IconButton(
             icon: const Icon(Icons.exit_to_app),
