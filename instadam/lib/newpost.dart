@@ -29,13 +29,12 @@ class _NewPostScreenState extends State<Newpost> {
   void _createPost(BuildContext context) async {
     if (_selectedImage != null) {
       try {
-        // Crear el post en Firestore
+        // Crear el post con la imagen seleccionada
         await FirebaseFirestore.instance.collection('posts').add({
           'username': 'gerard_farre', // Esto debería venir del usuario actual
           'location': 'El campo',
           'userImage': 'assets/images/user1.jpg',
-          'postImage':
-              'assets/images/post1.jpg', // Aquí deberías subir la imagen real
+          'postImage': _selectedImage!.path, // Usar la imagen seleccionada
           'timestamp': FieldValue.serverTimestamp(),
         });
 
@@ -44,6 +43,8 @@ class _NewPostScreenState extends State<Newpost> {
       } catch (e) {
         print("Error al crear el post: $e");
       }
+    } else {
+      print("No se seleccionó ninguna imagen.");
     }
   }
 
