@@ -4,7 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'dart:async'; // Importa el paquete Timer
+import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart'; // Importa el paquete de SharedPreferences
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -24,12 +25,59 @@ class _ProfileScreenState extends State<Profile> {
   Timer? _followersTimer;
   Timer? _followingTimer;
 
+  // Lista de URLs de imágenes (puedes poner las que quieras)
+  List<String> _posts = [
+    'https://picsum.photos/200/300',
+    'https://picsum.photos/201/300',
+    'https://picsum.photos/202/300',
+    'https://picsum.photos/203/300',
+    'https://picsum.photos/204/300',
+    'https://picsum.photos/205/300',
+    'https://picsum.photos/206/300',
+    'https://picsum.photos/207/300',
+    'https://picsum.photos/208/300',
+  ];
+
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _startFollowersTimer();
     _startFollowingTimer();
+    _updatePostsCount(); // Actualizar posts al cargar
+  }
+
+  void _updatePostsCount() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      setState(() {
+        posts = _posts.length;
+      });
+      await _firestore.collection('usuarios').doc(user.uid).update({
+        'posts': posts,
+      });
+      _saveToSharedPreferences(); // Guardar en SharedPreferences
+    }
+  }
+
+  // Guardar en SharedPreferences
+  Future<void> _saveToSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('posts', posts);
+    prefs.setString('userName', _userName);
+    prefs.setString('userImage', _userImage);
+    prefs.setStringList('posts', _posts); // Guardar la lista de posts
+  }
+
+  // Cargar desde SharedPreferences
+  Future<void> _loadFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      posts = prefs.getInt('posts') ?? 0;
+      _userName = prefs.getString('userName') ?? 'Usuario';
+      _userImage = prefs.getString('userImage') ?? '';
+      _posts = prefs.getStringList('posts') ?? [];
+    });
   }
 
   @override
@@ -40,7 +88,7 @@ class _ProfileScreenState extends State<Profile> {
     super.dispose();
   }
 
-  /// Cargar los datos del usuario de Firestore
+  // Cargar los datos del usuario de Firestore
   Future<void> _loadUserData() async {
     User? user = _auth.currentUser;
     if (user != null) {
@@ -72,7 +120,7 @@ class _ProfileScreenState extends State<Profile> {
     }
   }
 
-  /// Cargar la imagen almacenada en la memoria del dispositivo
+  // Cargar la imagen almacenada en la memoria del dispositivo
   Future<void> _loadImageFromLocal(String imagePath) async {
     File imageFile = File(imagePath);
     if (await imageFile.exists()) {
@@ -82,7 +130,7 @@ class _ProfileScreenState extends State<Profile> {
     }
   }
 
-  /// Seleccionar imagen y guardarla localmente
+  // Seleccionar imagen y guardarla localmente
   Future<void> _changeProfileImage() async {
     final XFile? pickedFile =
         await _picker.pickImage(source: ImageSource.gallery);
@@ -104,11 +152,13 @@ class _ProfileScreenState extends State<Profile> {
         await _firestore.collection('usuarios').doc(user.uid).update({
           'imageUrl': localPath,
         });
+
+        _saveToSharedPreferences(); // Guardar en SharedPreferences
       }
     }
   }
 
-  /// Guardar la imagen localmente
+  // Guardar la imagen localmente
   Future<String> _saveImageLocally(File imageFile) async {
     final directory = await getApplicationDocumentsDirectory();
     final String newPath = '${directory.path}/profile.jpg';
@@ -162,6 +212,40 @@ class _ProfileScreenState extends State<Profile> {
     });
   }
 
+  // Método para eliminar un post
+  void _deletePost(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Eliminar publicación'),
+          content:
+              const Text('¿Estás seguro de que deseas eliminar esta imagen?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child:
+                  const Text('Eliminar', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                setState(() {
+                  _posts.removeAt(index); // Eliminar de la lista local
+                });
+                _updatePostsCount(); // Actualizar la cantidad de publicaciones
+                _saveToSharedPreferences(); // Guardar en SharedPreferences
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     User? user = _auth.currentUser;
@@ -196,9 +280,12 @@ class _ProfileScreenState extends State<Profile> {
             },
             itemBuilder: (BuildContext context) {
               return [
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'delete',
-                  child: Text('Borrar Cuenta'),
+                  child: Text(
+                    'Borrar Cuenta',
+                    style: TextStyle(color: Colors.red), // Cambiar color a rojo
+                  ),
                 ),
               ];
             },
@@ -256,11 +343,15 @@ class _ProfileScreenState extends State<Profile> {
                 crossAxisSpacing: 4,
                 mainAxisSpacing: 4,
               ),
-              itemCount: 9,
+              itemCount: _posts.length,
               itemBuilder: (context, index) {
-                return Container(
-                  color: Colors.grey[300],
-                  child: const Center(child: Icon(Icons.image, size: 50)),
+                return GestureDetector(
+                  onLongPress: () =>
+                      _deletePost(index), // Borrar al mantener presionado
+                  child: Image.network(
+                    _posts[index],
+                    fit: BoxFit.cover,
+                  ),
                 );
               },
             ),
@@ -277,7 +368,7 @@ class _ProfileScreenState extends State<Profile> {
           number,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        Text(label, style: const TextStyle(color: Colors.grey)),
+        Text(label),
       ],
     );
   }
@@ -285,54 +376,49 @@ class _ProfileScreenState extends State<Profile> {
   ElevatedButton _buildButton(String text, VoidCallback onPressed) {
     return ElevatedButton(
       onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-        side: const BorderSide(color: Colors.grey),
-      ),
       child: Text(text),
     );
   }
 
   Future<void> _changeUserName() async {
-    TextEditingController nameController =
-        TextEditingController(text: _userName);
-
-    showDialog(
+    final newName = await showDialog<String>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
+        TextEditingController controller =
+            TextEditingController(text: _userName);
         return AlertDialog(
-          title: const Text('Cambiar nombre'),
+          title: const Text("Cambiar nombre de usuario"),
           content: TextField(
-            controller: nameController,
+            controller: controller,
             decoration: const InputDecoration(hintText: 'Nuevo nombre'),
           ),
-          actions: <Widget>[
+          actions: [
             TextButton(
-              onPressed: () async {
-                String newName = nameController.text.trim();
-                if (newName.isNotEmpty && newName != _userName) {
-                  User? user = _auth.currentUser;
-                  if (user != null) {
-                    await _firestore
-                        .collection('usuarios')
-                        .doc(user.uid)
-                        .update({
-                      'nombre': newName,
-                    });
-                    setState(() {
-                      _userName = newName;
-                    });
-                  }
-                }
-                Navigator.of(context).pop();
-              },
-              child: const Text('Guardar'),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, controller.text),
+              child: const Text("Guardar"),
             ),
           ],
         );
       },
     );
+
+    if (newName != null && newName.isNotEmpty) {
+      setState(() {
+        _userName = newName;
+      });
+      // Guardar el nombre de usuario en Firestore
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await _firestore.collection('usuarios').doc(user.uid).update({
+          'nombre': newName,
+        });
+      }
+
+      _saveToSharedPreferences(); // Guardar en SharedPreferences
+    }
   }
 }

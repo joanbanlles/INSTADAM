@@ -29,18 +29,19 @@ class _NewPostScreenState extends State<Newpost> {
   void _createPost(BuildContext context) async {
     if (_selectedImage != null) {
       try {
-        // Crear el post en Firestore
+        // Usar la ruta real de la imagen seleccionada
+        String imagePath = _selectedImage!.path;
+
         await FirebaseFirestore.instance.collection('posts').add({
-          'username': 'gerard_farre', // Esto debería venir del usuario actual
+          'username': 'gerard_farre',
           'location': 'El campo',
           'userImage': 'assets/images/user1.jpg',
-          'postImage':
-              'assets/images/post1.jpg', // Aquí deberías subir la imagen real
+          'postImage': imagePath, // Usar la ruta real de la imagen
           'timestamp': FieldValue.serverTimestamp(),
         });
 
-        // Navegar a la pantalla de inicio
-        Navigator.pushReplacementNamed(context, '/home');
+        // Volver a la pantalla anterior
+        Navigator.pop(context, imagePath);
       } catch (e) {
         print("Error al crear el post: $e");
       }
