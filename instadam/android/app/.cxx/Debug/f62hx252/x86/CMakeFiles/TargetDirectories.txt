@@ -1,0 +1,2 @@
+C:/Users/joanb/Documents/GitHub/INSTADAM/instadam/android/app/.cxx/Debug/f62hx252/x86/CMakeFiles/edit_cache.dir
+C:/Users/joanb/Documents/GitHub/INSTADAM/instadam/android/app/.cxx/Debug/f62hx252/x86/CMakeFiles/rebuild_cache.dir
