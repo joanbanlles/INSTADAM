@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:instadam/home.dart'; // Asegúrate de tener esta importación
+import 'package:instadam/home.dart';
 
 class Newpost extends StatefulWidget {
   @override
@@ -29,18 +29,16 @@ class _NewPostScreenState extends State<Newpost> {
   void _createPost(BuildContext context) async {
     if (_selectedImage != null) {
       try {
-        // Usar la ruta real de la imagen seleccionada
         String imagePath = _selectedImage!.path;
 
         await FirebaseFirestore.instance.collection('posts').add({
           'username': 'gerard_farre',
           'location': 'El campo',
           'userImage': 'assets/images/user1.jpg',
-          'postImage': imagePath, // Usar la ruta real de la imagen
+          'postImage': imagePath,
           'timestamp': FieldValue.serverTimestamp(),
         });
 
-        // Volver a la pantalla anterior
         Navigator.pop(context, imagePath);
       } catch (e) {
         print("Error al crear el post: $e");

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instadam/comments.dart'; // Asegúrate de tener la pantalla de comentarios
+import 'package:instadam/comments.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
@@ -59,7 +59,7 @@ class _StoriesSectionState extends State<StoriesSection> {
   ];
 
   final List<List<String>> userStories = [
-    [], // Para tus historias
+    [],
     [
       'assets/images/story1_juanillo.webp',
       'assets/images/story2_juanillo.jpg',
@@ -81,10 +81,9 @@ class _StoriesSectionState extends State<StoriesSection> {
   void initState() {
     super.initState();
     _loadUserProfile();
-    _loadStoriesFromPrefs(); // Cargar historias guardadas
+    _loadStoriesFromPrefs();
   }
 
-  // Método para cargar historias guardadas
   Future<void> _loadStoriesFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final stories = prefs.getStringList(STORIES_KEY);
@@ -119,7 +118,6 @@ class _StoriesSectionState extends State<StoriesSection> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      // Copiar la imagen a un directorio permanente
       final permanentImage = await _saveImagePermanently(pickedFile.path);
 
       setState(() {
@@ -130,7 +128,6 @@ class _StoriesSectionState extends State<StoriesSection> {
         }
       });
 
-      // Guardar las historias en SharedPreferences
       await _saveStoriesToPrefs(userStories[0]);
 
       if (mounted) {
@@ -269,7 +266,6 @@ class _StoriesSectionState extends State<StoriesSection> {
             );
           }
 
-          // Resto de historias
           return GestureDetector(
             onTap: () {
               if (userStories[index].isNotEmpty) {
@@ -350,7 +346,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex; // Comienza con la imagen inicial
+    currentIndex = widget.initialIndex;
     _loadLikeStatus();
   }
 
@@ -377,7 +373,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
         currentIndex++;
       });
     } else {
-      // Si es la última foto de la historia, ir a la siguiente historia o cerrar la pantalla
       _goToNextUserStory();
     }
   }
@@ -417,14 +412,11 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
       ],
     ];
 
-    // Obtener el índice del siguiente usuario
     final nextIndex =
         (userNames.indexOf(widget.username) + 1) % userNames.length;
 
-    // Si no hay más usuarios, vuelve a la pantalla principal
     if (nextIndex == 0) {
-      Navigator.pop(
-          context); // Cierra la pantalla de historia y regresa a la pantalla principal
+      Navigator.pop(context);
     } else {
       Navigator.pushReplacement(
         context,
@@ -455,7 +447,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
           },
           child: Stack(
             children: [
-              // Main story image
               Center(
                 child: widget.storyImages[currentIndex].startsWith('assets/')
                     ? Image.asset(
@@ -477,7 +468,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                         },
                       ),
               ),
-              // Top bar with username and progress indicators
               Column(
                 children: [
                   Padding(
@@ -500,7 +490,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                       ],
                     ),
                   ),
-                  // Progress indicators
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Row(
@@ -520,7 +509,6 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   ),
                 ],
               ),
-              // Bottom interaction bar
               Positioned(
                 bottom: 0,
                 left: 0,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Importar FirebaseAuth
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -58,15 +58,12 @@ class _LoginScreenState extends State<Login> {
     }
 
     try {
-      // Autenticación en Firebase
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: username, password: password);
 
-      // Si el login es exitoso
       await _saveCredentials();
       Navigator.pushReplacementNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
-      // Si ocurre un error
       _showErrorDialog('Usuario o contraseña incorrectos');
     }
   }

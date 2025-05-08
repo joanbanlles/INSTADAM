@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
-import 'package:shared_preferences/shared_preferences.dart'; // Importa el paquete de SharedPreferences
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -25,7 +25,6 @@ class _ProfileScreenState extends State<Profile> {
   Timer? _followersTimer;
   Timer? _followingTimer;
 
-  // Lista de URLs de imágenes (puedes poner las que quieras)
   List<String> _posts = [
     'https://picsum.photos/200/300',
     'https://picsum.photos/201/300',
@@ -44,7 +43,7 @@ class _ProfileScreenState extends State<Profile> {
     _loadUserData();
     _startFollowersTimer();
     _startFollowingTimer();
-    _updatePostsCount(); // Actualizar posts al cargar
+    _updatePostsCount();
   }
 
   void _updatePostsCount() async {
@@ -56,20 +55,18 @@ class _ProfileScreenState extends State<Profile> {
       await _firestore.collection('usuarios').doc(user.uid).update({
         'posts': posts,
       });
-      _saveToSharedPreferences(); // Guardar en SharedPreferences
+      _saveToSharedPreferences();
     }
   }
 
-  // Guardar en SharedPreferences
   Future<void> _saveToSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt('posts', posts);
     prefs.setString('userName', _userName);
     prefs.setString('userImage', _userImage);
-    prefs.setStringList('posts', _posts); // Guardar la lista de posts
+    prefs.setStringList('posts', _posts);
   }
 
-  // Cargar desde SharedPreferences
   Future<void> _loadFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -82,13 +79,11 @@ class _ProfileScreenState extends State<Profile> {
 
   @override
   void dispose() {
-    // Detener los temporizadores cuando el widget se destruya
     _followersTimer?.cancel();
     _followingTimer?.cancel();
     super.dispose();
   }
 
-  // Cargar los datos del usuario de Firestore
   Future<void> _loadUserData() async {
     User? user = _auth.currentUser;
     if (user != null) {
@@ -104,7 +99,6 @@ class _ProfileScreenState extends State<Profile> {
           following = userDoc['following'] ?? 0;
         });
 
-        // Si hay una imagen guardada, cargarla desde el almacenamiento local
         if (_userImage.isNotEmpty) {
           _loadImageFromLocal(_userImage);
         }
@@ -120,7 +114,6 @@ class _ProfileScreenState extends State<Profile> {
     }
   }
 
-  // Cargar la imagen almacenada en la memoria del dispositivo
   Future<void> _loadImageFromLocal(String imagePath) async {
     File imageFile = File(imagePath);
     if (await imageFile.exists()) {
@@ -130,7 +123,6 @@ class _ProfileScreenState extends State<Profile> {
     }
   }
 
-  // Seleccionar imagen y guardarla localmente
   Future<void> _changeProfileImage() async {
     final XFile? pickedFile =
         await _picker.pickImage(source: ImageSource.gallery);
@@ -140,7 +132,6 @@ class _ProfileScreenState extends State<Profile> {
       User? user = _auth.currentUser;
 
       if (user != null) {
-        // Guardar la imagen localmente
         String localPath = await _saveImageLocally(newImage);
 
         setState(() {
@@ -148,17 +139,15 @@ class _ProfileScreenState extends State<Profile> {
           _userImage = localPath;
         });
 
-        // Guardar la ruta en Firestore
         await _firestore.collection('usuarios').doc(user.uid).update({
           'imageUrl': localPath,
         });
 
-        _saveToSharedPreferences(); // Guardar en SharedPreferences
+        _saveToSharedPreferences();
       }
     }
   }
 
-  // Guardar la imagen localmente
   Future<String> _saveImageLocally(File imageFile) async {
     final directory = await getApplicationDocumentsDirectory();
     final String newPath = '${directory.path}/profile.jpg';
@@ -166,23 +155,18 @@ class _ProfileScreenState extends State<Profile> {
     return newPath;
   }
 
-  // Método para eliminar la cuenta
   Future<void> _deleteAccount() async {
     User? user = _auth.currentUser;
 
     if (user != null) {
-      // Eliminar los datos del usuario de Firestore
       await _firestore.collection('usuarios').doc(user.uid).delete();
 
-      // Eliminar la cuenta de Firebase Auth
       await user.delete();
 
-      // Después de eliminar la cuenta, se puede redirigir al usuario a la pantalla de inicio de sesión o pantalla principal
       Navigator.of(context).pushReplacementNamed('/login');
     }
   }
 
-  // Iniciar temporizador para aumentar los seguidores
   void _startFollowersTimer() {
     _followersTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
       setState(() {
@@ -197,7 +181,6 @@ class _ProfileScreenState extends State<Profile> {
     });
   }
 
-  // Iniciar temporizador para aumentar los siguiendo
   void _startFollowingTimer() {
     _followingTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
       setState(() {
@@ -212,7 +195,6 @@ class _ProfileScreenState extends State<Profile> {
     });
   }
 
-  // Método para eliminar un post
   void _deletePost(int index) {
     showDialog(
       context: context,
@@ -233,10 +215,10 @@ class _ProfileScreenState extends State<Profile> {
                   const Text('Eliminar', style: TextStyle(color: Colors.red)),
               onPressed: () {
                 setState(() {
-                  _posts.removeAt(index); // Eliminar de la lista local
+                  _posts.removeAt(index);
                 });
-                _updatePostsCount(); // Actualizar la cantidad de publicaciones
-                _saveToSharedPreferences(); // Guardar en SharedPreferences
+                _updatePostsCount();
+                _saveToSharedPreferences();
                 Navigator.of(context).pop();
               },
             ),
@@ -284,7 +266,7 @@ class _ProfileScreenState extends State<Profile> {
                   value: 'delete',
                   child: Text(
                     'Borrar Cuenta',
-                    style: TextStyle(color: Colors.red), // Cambiar color a rojo
+                    style: TextStyle(color: Colors.red),
                   ),
                 ),
               ];
@@ -346,8 +328,7 @@ class _ProfileScreenState extends State<Profile> {
               itemCount: _posts.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
-                  onLongPress: () =>
-                      _deletePost(index), // Borrar al mantener presionado
+                  onLongPress: () => _deletePost(index),
                   child: Image.network(
                     _posts[index],
                     fit: BoxFit.cover,
@@ -410,7 +391,6 @@ class _ProfileScreenState extends State<Profile> {
       setState(() {
         _userName = newName;
       });
-      // Guardar el nombre de usuario en Firestore
       User? user = _auth.currentUser;
       if (user != null) {
         await _firestore.collection('usuarios').doc(user.uid).update({
@@ -418,7 +398,7 @@ class _ProfileScreenState extends State<Profile> {
         });
       }
 
-      _saveToSharedPreferences(); // Guardar en SharedPreferences
+      _saveToSharedPreferences();
     }
   }
 }

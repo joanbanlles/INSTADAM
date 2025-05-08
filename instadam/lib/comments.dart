@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Importamos Firebase Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CommentsScreen extends StatefulWidget {
-  final String postId; // Asegúrate de que postId sea un String como se usa en Firestore
+  final String postId;
 
   const CommentsScreen({super.key, required this.postId});
 
@@ -13,27 +13,25 @@ class CommentsScreen extends StatefulWidget {
 class _CommentsScreenState extends State<CommentsScreen> {
   final TextEditingController _commentController = TextEditingController();
 
-  // Función para agregar comentario a Firestore
   void addComment(String content) {
     FirebaseFirestore.instance
-        .collection('comments') // Colección principal
-        .doc(widget.postId) // Documento que representa el post (con el ID del post)
-        .collection('comments') // Subcolección de comentarios
+        .collection('comments')
+        .doc(widget.postId)
+        .collection('comments')
         .add({
       'comment': content,
-      'timestamp': FieldValue.serverTimestamp(), // Agregamos una marca de tiempo
+      'timestamp': FieldValue.serverTimestamp(),
     });
-    _commentController.clear(); // Limpiamos el campo de texto después de agregar el comentario
+    _commentController.clear();
   }
 
-  // Función para eliminar un comentario de Firestore
   void deleteComment(String commentId) {
     FirebaseFirestore.instance
-        .collection('comments') // Colección principal
-        .doc(widget.postId) // Documento que representa el post (con el ID del post)
-        .collection('comments') // Subcolección de comentarios
-        .doc(commentId) // Documento específico del comentario
-        .delete(); // Eliminamos el comentario
+        .collection('comments')
+        .doc(widget.postId)
+        .collection('comments')
+        .doc(commentId)
+        .delete();
   }
 
   @override
@@ -58,15 +56,14 @@ class _CommentsScreenState extends State<CommentsScreen> {
         ),
         child: Column(
           children: [
-            // Mostrar los comentarios en tiempo real desde Firestore
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('comments') // Colección principal
-                    .doc(widget.postId) // Documento que representa el post
-                    .collection('comments') // Subcolección de comentarios
+                    .collection('comments')
+                    .doc(widget.postId)
+                    .collection('comments')
                     .orderBy('timestamp', descending: true)
-                    .snapshots(), // Obtenemos los comentarios en tiempo real
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
@@ -85,13 +82,15 @@ class _CommentsScreenState extends State<CommentsScreen> {
                   return ListView.builder(
                     itemCount: comments.length,
                     itemBuilder: (context, index) {
-                      final commentData = comments[index].data() as Map<String, dynamic>;
+                      final commentData =
+                          comments[index].data() as Map<String, dynamic>;
                       final commentContent = commentData['comment'] ?? '';
-                      final commentId = comments[index].id; // Obtenemos el ID del comentario
+                      final commentId = comments[index].id;
 
                       return Card(
                         color: const Color(0xFFFFF3E0),
-                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         child: ListTile(
                           title: Text(
                             commentContent,
@@ -101,27 +100,30 @@ class _CommentsScreenState extends State<CommentsScreen> {
                               color: Colors.brown,
                             ),
                           ),
-                          leading: const Icon(Icons.comment, color: Colors.brown),
+                          leading:
+                              const Icon(Icons.comment, color: Colors.brown),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              // Confirmación antes de eliminar
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   title: const Text('Delete Comment'),
-                                  content: const Text('Are you sure you want to delete this comment?'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this comment?'),
                                   actions: [
                                     TextButton(
-                                      onPressed: () => Navigator.of(context).pop(),
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
                                       child: const Text('Cancel'),
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        deleteComment(commentId); // Eliminamos el comentario de Firestore
-                                        Navigator.of(context).pop(); // Cerramos el diálogo
+                                        deleteComment(commentId);
+                                        Navigator.of(context).pop();
                                       },
-                                      child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                      child: const Text('Delete',
+                                          style: TextStyle(color: Colors.red)),
                                     ),
                                   ],
                                 ),
@@ -135,7 +137,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 },
               ),
             ),
-            // Campo para agregar un nuevo comentario
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Row(
@@ -146,14 +147,16 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       style: const TextStyle(color: Colors.brown),
                       decoration: InputDecoration(
                         hintText: 'Write a comment...',
-                        hintStyle: TextStyle(color: Colors.brown.withOpacity(0.7)),
+                        hintStyle:
+                            TextStyle(color: Colors.brown.withOpacity(0.7)),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.9),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                       ),
                     ),
                   ),
@@ -166,7 +169,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                         onTap: () {
                           final content = _commentController.text.trim();
                           if (content.isNotEmpty) {
-                            addComment(content); // Guardamos el comentario en Firebase
+                            addComment(content);
                           }
                         },
                         child: const Padding(
